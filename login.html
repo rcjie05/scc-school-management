@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1E3352">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SCC Portal">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+    <title>Login — St. Cecilia's College-Cebu, Inc.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --red:    #8b0000;
+            --red-lt: #a31515;
+            --gold:   #c8a951;
+            --gold-lt:#e8c96a;
+            --dark:   #1e293b;
+            --gray:   #64748b;
+            --border: #e2e8f0;
+            --cream:  #fdf8f0;
+        }
+        body { font-family: 'Lato', sans-serif; background: #1a0000; min-height: 100vh; display: flex; flex-direction: column; }
+        .topbar { background: var(--red); color: white; font-size:.73rem; padding:.35rem 2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.4rem; border-bottom:2px solid var(--gold); }
+        .topbar a { color: var(--gold-lt); text-decoration: none; }
+        .topbar-right { display:flex; gap:1.5rem; }
+        .navbar { background:white; border-bottom:3px solid var(--red); display:flex; align-items:center; justify-content:space-between; padding:.6rem 2rem; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+        .nav-brand { display:flex; align-items:center; gap:.85rem; text-decoration:none; }
+        .nav-logo { width:52px; height:52px; border-radius:50%; background:var(--red); border:2.5px solid var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:800; font-size:.78rem; color:var(--gold); text-align:center; line-height:1.2; overflow:hidden; }
+        .nav-logo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .nav-name strong { display:block; font-family:'Playfair Display',serif; font-size:.92rem; color:var(--red); font-weight:700; }
+        .nav-name small { font-size:.68rem; color:var(--gray); }
+        .nav-links { display:flex; gap:.15rem; align-items:center; }
+        .nav-links a { color:var(--dark); text-decoration:none; font-size:.8rem; font-weight:700; padding:.45rem .8rem; border-radius:4px; text-transform:uppercase; letter-spacing:.4px; transition:background .2s,color .2s; }
+        .nav-links a:hover { background:var(--red); color:white; }
+        .nav-links a.active { background:var(--red); color:white; }
+        .nav-enroll { background:var(--gold) !important; color:var(--dark) !important; }
+        .main-wrap { flex:1; display:flex; min-height:0; }
+        .hero-side { flex:1.1; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; }
+        .slides { position:absolute; inset:0; display:flex; width:500%; height:100%; animation:slide 20s infinite; }
+        .slide { width:20%; height:100%; position:relative; flex-shrink:0; }
+        .slide-bg { position:absolute; inset:0; }
+        .s1 .slide-bg { background:linear-gradient(135deg,#2d0000 0%,#8b0000 60%,#4a0000 100%); }
+        .s2 .slide-bg { background:linear-gradient(135deg,#4a0000 0%,#2d0000 60%,#700000 100%); }
+        .s3 .slide-bg { background:linear-gradient(135deg,#700000 0%,#4a0000 60%,#2d0000 100%); }
+        .s4 .slide-bg { background:linear-gradient(135deg,#2d0000 0%,#700000 60%,#8b0000 100%); }
+        .s5 .slide-bg { background:linear-gradient(135deg,#8b0000 0%,#2d0000 60%,#4a0000 100%); }
+        .slide::before { content:''; position:absolute; inset:0; background-size:contain; background-position:center; background-repeat:no-repeat; opacity:1; z-index:1; }
+        .s1::before { background-image:url('images/1st.jpg'); }
+        .s2::before { background-image:url('images/2nd.jpg'); }
+        .s3::before { background-image:url('images/3rd.jpg'); }
+        .s4::before { background-image:url('images/4th.jpg'); }
+        .s5::before { background-image:url('images/scc4.png'); }
+        .slide::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.65); z-index:2; }
+        @keyframes slide { 0%,18%{transform:translateX(0%)} 20%,38%{transform:translateX(-20%)} 40%,58%{transform:translateX(-40%)} 60%,78%{transform:translateX(-60%)} 80%,98%{transform:translateX(-80%)} 100%{transform:translateX(0%)} }
+        .slide-dots { position:absolute; bottom:1rem; left:3rem; display:flex; gap:.4rem; z-index:10; }
+        .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3); border:1.5px solid rgba(255,255,255,0.5); cursor:pointer; transition:background .4s; }
+        .dot.active { background:var(--gold); border-color:var(--gold); }
+        .hero-content { position:relative; z-index:10; padding:3rem; color:white; }
+        .hero-tag { display:inline-block; background:var(--gold); color:var(--dark); font-size:.68rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; padding:.28rem .8rem; border-radius:3px; margin-bottom:1rem; }
+        .hero-content h1 { font-family:'Playfair Display',serif; font-size:clamp(1.6rem,3vw,2.6rem); font-weight:800; line-height:1.15; text-shadow:0 2px 12px rgba(0,0,0,0.6); margin-bottom:.6rem; }
+        .hero-content h1 em { color:var(--gold-lt); font-style:italic; }
+        .gold-bar { width:48px; height:3px; background:var(--gold); border-radius:2px; margin-bottom:1rem; }
+        .hero-content p { font-size:.88rem; opacity:.8; line-height:1.65; max-width:380px; margin-bottom:1.5rem; }
+        .hero-links { display:flex; gap:.75rem; flex-wrap:wrap; }
+        .hero-links a { display:inline-block; font-size:.78rem; font-weight:700; padding:.5rem 1.1rem; border-radius:4px; text-decoration:none; text-transform:uppercase; letter-spacing:.4px; transition:all .2s; }
+        .hl-gold { background:var(--gold); color:var(--dark); }
+        .hl-ghost { border:1.5px solid rgba(255,255,255,0.5); color:white; }
+        .login-side { width:430px; flex-shrink:0; background:var(--cream); display:flex; flex-direction:column; overflow-y:auto; }
+        .login-head { background:var(--red); padding:1.75rem 2rem 1.25rem; text-align:center; border-bottom:4px solid var(--gold); }
+        .login-logo { width:72px; height:72px; border-radius:50%; background:white; border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:800; font-size:1rem; color:var(--red); margin:0 auto .85rem; text-align:center; line-height:1.2; overflow:hidden; }
+        .login-logo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .login-head h2 { font-family:'Playfair Display',serif; font-size:1.05rem; color:white; font-weight:700; margin-bottom:.2rem; }
+        .login-head p { font-size:.72rem; color:rgba(255,255,255,0.65); }
+        .login-body { flex:1; padding:1.75rem 2rem; }
+        #alert-container .alert { padding:.85rem 1rem; border-radius:8px; font-size:.83rem; margin-bottom:1.25rem; }
+        #alert-container .alert-error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+        #alert-container .alert-success { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+        .form-group { margin-bottom:1.15rem; }
+        .form-label { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--dark); margin-bottom:.4rem; }
+        .form-input { width:100%; padding:.75rem 1rem; border:1.5px solid var(--border); border-radius:8px; font-family:'Lato',sans-serif; font-size:.9rem; color:var(--dark); background:white; transition:border-color .2s,box-shadow .2s; }
+        .form-input:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(139,0,0,0.1); }
+        .form-input::placeholder { color:#b0b8c4; }
+        .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.15rem; font-size:.82rem; }
+        .form-row label { display:flex; align-items:center; gap:.4rem; cursor:pointer; color:var(--gray); }
+        .form-row a { color:var(--red); text-decoration:none; font-weight:700; }
+        .btn-login { width:100%; background:var(--red); color:white; border:none; padding:.85rem; border-radius:8px; font-family:'Lato',sans-serif; font-size:.92rem; font-weight:900; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:background .2s,transform .1s,box-shadow .2s; margin-bottom:1.25rem; }
+        .btn-login:hover { background:var(--red-lt); transform:translateY(-1px); box-shadow:0 6px 22px rgba(139,0,0,0.38); }
+        .btn-login:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+        .login-footer { text-align:center; padding-top:1.25rem; border-top:1px solid var(--border); font-size:.8rem; color:var(--gray); line-height:1.9; }
+        .login-footer a { color:var(--red); font-weight:700; text-decoration:none; }
+        .info-box { background:#fff8e6; border:1px solid var(--gold); border-radius:8px; padding:.85rem 1rem; margin-top:1.25rem; font-size:.78rem; color:#78350f; line-height:1.65; }
+        .info-box strong { display:block; color:var(--red); margin-bottom:.3rem; font-size:.8rem; }
+        .info-box a { color:var(--red); font-weight:700; }
+        .page-footer { background:var(--red); border-top:3px solid var(--gold); padding:.85rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+        .page-footer p { font-size:.72rem; color:rgba(255,255,255,0.5); }
+        .page-footer a { font-size:.72rem; color:var(--gold-lt); text-decoration:none; }
+
+        /* ── Forgot Password Modal ─────────────────────────── */
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal-box { background:white; border-radius:12px; width:100%; max-width:420px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalIn .25s ease; }
+        @keyframes modalIn { from{transform:translateY(-24px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .modal-head { background:var(--red); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--gold); }
+        .modal-head h3 { margin:0; font-size:1rem; color:white; font-family:'Playfair Display',serif; }
+        .modal-close { background:none; border:none; color:rgba(255,255,255,0.7); font-size:22px; cursor:pointer; line-height:1; padding:0; }
+        .modal-close:hover { color:white; }
+        .modal-body { padding:24px; }
+        .modal-step { display:none; }
+        .modal-step.active { display:block; }
+        .modal-step p.sub { font-size:.82rem; color:var(--gray); margin:0 0 18px; line-height:1.6; }
+        .otp-inputs { display:flex; gap:10px; justify-content:center; margin:20px 0; }
+        .otp-inputs input { width:48px; height:56px; border:2px solid var(--border); border-radius:8px; text-align:center; font-size:1.5rem; font-weight:900; font-family:'Lato',sans-serif; color:var(--red); background:#fdf8f0; transition:border-color .2s; }
+        .otp-inputs input:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(139,0,0,0.12); }
+        .modal-alert { padding:.7rem .9rem; border-radius:7px; font-size:.8rem; margin-bottom:14px; display:none; }
+        .modal-alert.error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; display:block; }
+        .modal-alert.success { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; display:block; }
+        .btn-modal { width:100%; background:var(--red); color:white; border:none; padding:.75rem; border-radius:8px; font-family:'Lato',sans-serif; font-size:.88rem; font-weight:900; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:background .2s,transform .1s; margin-top:6px; }
+        .btn-modal:hover { background:var(--red-lt); transform:translateY(-1px); }
+        .btn-modal:disabled { opacity:.65; cursor:not-allowed; transform:none; }
+        .btn-modal-ghost { width:100%; background:transparent; color:var(--red); border:1.5px solid var(--red); padding:.65rem; border-radius:8px; font-family:'Lato',sans-serif; font-size:.82rem; font-weight:700; cursor:pointer; margin-top:8px; transition:all .2s; }
+        .btn-modal-ghost:hover { background:var(--red); color:white; }
+        .resend-row { text-align:center; margin-top:12px; font-size:.8rem; color:var(--gray); }
+        .resend-row a { color:var(--red); font-weight:700; cursor:pointer; text-decoration:none; }
+        .resend-row a.disabled { color:#aaa; pointer-events:none; }
+        .pass-strength { height:4px; border-radius:2px; background:#eee; margin:6px 0 4px; overflow:hidden; }
+        .pass-strength-bar { height:100%; width:0; border-radius:2px; transition:width .3s,background .3s; }
+        .pass-hint { font-size:.72rem; color:var(--gray); }
+        .step-indicator { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px; }
+        .step-dot { width:8px; height:8px; border-radius:50%; background:#e2e8f0; transition:background .3s; }
+        .step-dot.done { background:var(--gold); }
+        .step-dot.active { background:var(--red); }
+
+        @media (max-width:900px) {
+            .hero-side { display:none; }
+            .login-side { width:100%; }
+            .navbar { padding:.6rem 1rem; }
+            .nav-links { display:none; }
+            .topbar-left { display:none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left"><span>#AllevoSCC — Challenges Minds · Moves Hearts · Changes Lives</span></div>
+    <div class="topbar-right">
+        <span>📞 <a href="tel:032-268-4746">(032) 268-4746</a></span>
+        <span>✉ <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a></span>
+    </div>
+</div>
+
+<nav class="navbar">
+    <a href="index.html" class="nav-brand">
+        <div class="nav-logo">
+            <img src="images/logo.png" alt="SCC" onerror="this.style.display='none'">
+        </div>
+        <div class="nav-name">
+            <strong>St. Cecilia's College-Cebu, Inc.</strong>
+            <small>Poblacion Ward II, Minglanilla, Cebu — Est. 1999</small>
+        </div>
+    </a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#enrollment">Admissions</a>
+        <a href="index.html#about">About Us</a>
+        <a href="login.html" class="active">Login</a>
+        <a href="enrollment.html" class="nav-enroll">Enroll Now</a>
+    </div>
+</nav>
+
+<div class="main-wrap">
+    <div class="hero-side">
+        <div class="slides">
+            <div class="slide s1"><div class="slide-bg"></div></div>
+            <div class="slide s2"><div class="slide-bg"></div></div>
+            <div class="slide s3"><div class="slide-bg"></div></div>
+            <div class="slide s4"><div class="slide-bg"></div></div>
+            <div class="slide s5"><div class="slide-bg"></div></div>
+        </div>
+        <div class="slide-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-tag">Student Portal</div>
+            <h1>Welcome Back,<br><em>Cecilian!</em></h1>
+            <div class="gold-bar"></div>
+            <p>Access your academic records, class schedules, grades, announcements, and more through the student portal.</p>
+            <div class="hero-links">
+                <a href="enrollment.html" class="hl-gold">Online Enrollment</a>
+                <a href="index.html" class="hl-ghost">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-side">
+        <div class="login-head">
+            <div class="login-logo">
+                <img src="images/logo.png" alt="SCC Logo" onerror="this.parentNode.innerHTML='SCC<br>CI'">
+            </div>
+            <h2>St. Cecilia's College-Cebu, Inc.</h2>
+            <p>Saint Cecilia College &middot; Student Portal</p>
+        </div>
+
+        <div class="login-body">
+            <div id="alert-container"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="your.email@school.edu" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                <div class="form-row">
+                    <label>
+                        <input type="checkbox" name="remember" style="width:auto;">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" id="forgotLink">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn-login">Login to Portal</button>
+            </form>
+
+            <div class="login-footer">
+                Don't have an account?<br>
+                <a href="enrollment.html">Full Enrollment Form</a>
+                &nbsp;&middot;&nbsp;
+                <a href="register.html">Quick Register</a>
+            </div>
+
+            <div class="info-box">
+                <strong>Need help logging in?</strong>
+                Contact the Registrar at <a href="tel:032-326-3677">(032) 326-3677</a>
+                or <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-footer">
+    <p>&copy; 2025 St. Cecilia's College-Cebu, Inc. &middot; All rights reserved</p>
+    <a href="https://stcecilia.edu.ph" target="_blank">stcecilia.edu.ph</a>
+</div>
+
+<script>
+    // Slide dots
+    const dots = document.querySelectorAll('.dot');
+    let cur = 0;
+    setInterval(() => {
+        dots[cur].classList.remove('active');
+        cur = (cur + 1) % 5;
+        dots[cur].classList.add('active');
+    }, 4000);
+
+    // URL error params
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const alertContainer = document.getElementById('alert-container');
+        if (error === 'deactivated') {
+            alertContainer.innerHTML = '<div class="alert alert-error">⚠️ Your account has been deactivated. Please contact the administrator for more information.</div>';
+        }
+    });
+
+    // Login form submit — posts to php/login.php
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const alertContainer = document.getElementById('alert-container');
+        const btn = e.target.querySelector('.btn-login');
+        btn.textContent = 'Logging in...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('php/login.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                alertContainer.innerHTML = '<div class="alert alert-success">✓ Login successful! Redirecting...</div>';
+                setTimeout(() => { window.location.href = result.redirect; }, 1000);
+            } else {
+                alertContainer.innerHTML = `<div class="alert alert-error">⚠️ ${result.message}</div>`;
+                btn.textContent = 'Login to Portal';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            alertContainer.innerHTML = '<div class="alert alert-error">⚠️ An error occurred. Please try again.</div>';
+            btn.textContent = 'Login to Portal';
+            btn.disabled = false;
+        }
+    });
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     Forgot Password Modal
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitle">🔐 Forgot Password</h3>
+      <button class="modal-close" id="modalCloseBtn" title="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot1"></div>
+        <div class="step-dot" id="dot2"></div>
+        <div class="step-dot" id="dot3"></div>
+      </div>
+
+      <div class="modal-alert" id="modalAlert"></div>
+
+      <!-- ── Step 1: Enter Email ── -->
+      <div class="modal-step active" id="step1">
+        <p class="sub">Enter your registered email address and we'll send a 6-digit OTP to reset your password.</p>
+        <div class="form-group">
+          <label class="form-label" for="fp_email">Email Address</label>
+          <input type="email" id="fp_email" class="form-input" placeholder="your.email@school.edu" required>
+        </div>
+        <button class="btn-modal" id="sendOtpBtn">Send OTP</button>
+      </div>
+
+      <!-- ── Step 2: Enter OTP ── -->
+      <div class="modal-step" id="step2">
+        <p class="sub">We sent a 6-digit OTP to <strong id="fp_email_display"></strong>. Enter it below. Valid for 10 minutes.</p>
+        <div class="otp-inputs">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <button class="btn-modal" id="verifyOtpBtn">Verify OTP</button>
+        <div class="resend-row">
+          Didn't receive it? <a id="resendLink" class="disabled">Resend OTP (<span id="resendTimer">60</span>s)</a>
+        </div>
+      </div>
+
+      <!-- ── Step 3: New Password ── -->
+      <div class="modal-step" id="step3">
+        <p class="sub">Choose a new password for your account. Minimum 8 characters with at least one letter and one number.</p>
+        <div class="form-group">
+          <label class="form-label" for="fp_pass">New Password</label>
+          <input type="password" id="fp_pass" class="form-input" placeholder="Minimum 8 characters">
+          <div class="pass-strength"><div class="pass-strength-bar" id="strengthBar"></div></div>
+          <div class="pass-hint" id="strengthHint"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fp_confirm">Confirm Password</label>
+          <input type="password" id="fp_confirm" class="form-input" placeholder="Re-enter your new password">
+        </div>
+        <button class="btn-modal" id="resetPassBtn">Reset Password</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Forgot Password Modal Logic ──────────────────────────────────────────────
+(function () {
+    const modal       = document.getElementById('forgotModal');
+    const modalTitle  = document.getElementById('modalTitle');
+    const modalAlert  = document.getElementById('modalAlert');
+    const steps       = [
+        document.getElementById('step1'),
+        document.getElementById('step2'),
+        document.getElementById('step3'),
+    ];
+    const dots = [
+        document.getElementById('dot1'),
+        document.getElementById('dot2'),
+        document.getElementById('dot3'),
+    ];
+
+    let currentStep = 0;
+    let verifiedEmail = '';
+    let verifiedOtp   = '';
+    let resendInterval;
+
+    // ── Open / Close ──────────────────────────────────────────────────────────
+    document.getElementById('forgotLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+    });
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    function openModal() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        goToStep(0);
+        document.getElementById('fp_email').focus();
+    }
+    function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        clearAlert();
+        resetModal();
+    }
+    function resetModal() {
+        document.getElementById('fp_email').value = '';
+        document.getElementById('fp_pass').value = '';
+        document.getElementById('fp_confirm').value = '';
+        document.querySelectorAll('.otp-digit').forEach(i => i.value = '');
+        verifiedEmail = '';
+        verifiedOtp   = '';
+        clearInterval(resendInterval);
+    }
+
+    // ── Step navigation ───────────────────────────────────────────────────────
+    function goToStep(n) {
+        steps.forEach((s, i) => s.classList.toggle('active', i === n));
+        dots.forEach((d, i) => {
+            d.classList.remove('active', 'done');
+            if (i < n)  d.classList.add('done');
+            if (i === n) d.classList.add('active');
+        });
+        const titles = ['🔐 Forgot Password', '📩 Enter OTP', '🔑 New Password'];
+        modalTitle.textContent = titles[n];
+        currentStep = n;
+        clearAlert();
+    }
+
+    // ── Alert ─────────────────────────────────────────────────────────────────
+    function showAlert(msg, type = 'error') {
+        modalAlert.className = 'modal-alert ' + type;
+        modalAlert.textContent = msg;
+    }
+    function clearAlert() {
+        modalAlert.className = 'modal-alert';
+        modalAlert.textContent = '';
+    }
+
+    // ── Disable/enable button ─────────────────────────────────────────────────
+    function setLoading(btn, loading, text) {
+        btn.disabled = loading;
+        btn.textContent = loading ? 'Please wait…' : text;
+    }
+
+    // ── POST helper ───────────────────────────────────────────────────────────
+    async function post(data) {
+        const fd = new FormData();
+        Object.entries(data).forEach(([k, v]) => fd.append(k, v));
+        const res = await fetch('php/api/forgot_password.php', { method: 'POST', body: fd });
+        return res.json();
+    }
+
+    // ── STEP 1: Send OTP ──────────────────────────────────────────────────────
+    document.getElementById('sendOtpBtn').addEventListener('click', async () => {
+        const email = document.getElementById('fp_email').value.trim();
+        if (!email) { showAlert('Please enter your email address.'); return; }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showAlert('Please enter a valid email address.'); return; }
+
+        const btn = document.getElementById('sendOtpBtn');
+        setLoading(btn, true, 'Send OTP');
+        clearAlert();
+
+        try {
+            const res = await post({ action: 'send_otp', email });
+            if (res.success) {
+                verifiedEmail = email;
+                document.getElementById('fp_email_display').textContent = email;
+                goToStep(1);
+                startResendTimer();
+                setTimeout(() => document.querySelectorAll('.otp-digit')[0].focus(), 100);
+            } else {
+                showAlert(res.message);
+            }
+        } catch (e) { showAlert('Network error. Please try again.'); }
+        finally { setLoading(btn, false, 'Send OTP'); }
+    });
+
+    // ── OTP digit inputs — auto-advance & backspace ───────────────────────────
+    document.querySelectorAll('.otp-digit').forEach((input, idx, all) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            e.target.value = val.slice(-1);
+            if (val && idx < all.length - 1) all[idx + 1].focus();
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) all[idx - 1].focus();
+        });
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+            all.forEach((inp, i) => { inp.value = paste[i] || ''; });
+            if (paste.length >= 6) all[5].focus();
+        });
+    });
+
+    function getOtpValue() {
+        return Array.from(document.querySelectorAll('.otp-digit')).map(i => i.value).join('');
+    }
+
+    // ── STEP 2: Verify OTP ────────────────────────────────────────────────────
+    document.getElementById('verifyOtpBtn').addEventListener('click', async () => {
+        const otp = getOtpValue();
+        if (otp.length !== 6) { showAlert('Please enter all 6 digits.'); return; }
+
+        const btn = document.getElementById('verifyOtpBtn');
+        setLoading(btn, true, 'Verify OTP');
+        clearAlert();
+
+        try {
+            const res = await post({ action: 'verify_otp', email: verifiedEmail, otp });
+            if (res.success) {
+                verifiedOtp = otp;
+                goToStep(2);
+                setTimeout(() => document.getElementById('fp_pass').focus(), 100);
+            } else {
+                showAlert(res.message);
+                document.querySelectorAll('.otp-digit').forEach(i => i.value = '');
+                document.querySelectorAll('.otp-digit')[0].focus();
+            }
+        } catch (e) { showAlert('Network error. Please try again.'); }
+        finally { setLoading(btn, false, 'Verify OTP'); }
+    });
+
+    // ── Resend Timer ──────────────────────────────────────────────────────────
+    function startResendTimer() {
+        const link = document.getElementById('resendLink');
+        const timer = document.getElementById('resendTimer');
+        let secs = 60;
+        link.classList.add('disabled');
+        timer.textContent = secs;
+        clearInterval(resendInterval);
+        resendInterval = setInterval(() => {
+            secs--;
+            timer.textContent = secs;
+            if (secs <= 0) {
+                clearInterval(resendInterval);
+                link.classList.remove('disabled');
+                link.textContent = 'Resend OTP';
+            }
+        }, 1000);
+    }
+
+    document.getElementById('resendLink').addEventListener('click', async (e) => {
+        if (e.target.classList.contains('disabled') || !verifiedEmail) return;
+        e.target.classList.add('disabled');
+        clearAlert();
+        try {
+            const res = await post({ action: 'send_otp', email: verifiedEmail });
+            showAlert(res.message, res.success ? 'success' : 'error');
+            if (res.success) {
+                startResendTimer();
+                document.querySelectorAll('.otp-digit').forEach(i => i.value = '');
+                document.querySelectorAll('.otp-digit')[0].focus();
+            }
+        } catch (e) { showAlert('Network error. Please try again.'); }
+    });
+
+    // ── STEP 3: Password Strength ─────────────────────────────────────────────
+    document.getElementById('fp_pass').addEventListener('input', function () {
+        const val = this.value;
+        let score = 0;
+        if (val.length >= 8)                  score++;
+        if (/[A-Z]/.test(val))               score++;
+        if (/[0-9]/.test(val))               score++;
+        if (/[^A-Za-z0-9]/.test(val))        score++;
+
+        const bar  = document.getElementById('strengthBar');
+        const hint = document.getElementById('strengthHint');
+        const levels = [
+            { pct: '0%',   color: '#eee',    label: '' },
+            { pct: '25%',  color: '#ef4444', label: 'Weak' },
+            { pct: '50%',  color: '#f97316', label: 'Fair' },
+            { pct: '75%',  color: '#eab308', label: 'Good' },
+            { pct: '100%', color: '#22c55e', label: 'Strong' },
+        ];
+        const lvl = levels[score];
+        bar.style.width    = lvl.pct;
+        bar.style.background = lvl.color;
+        hint.textContent   = lvl.label;
+    });
+
+    // ── STEP 3: Reset Password ────────────────────────────────────────────────
+    document.getElementById('resetPassBtn').addEventListener('click', async () => {
+        const pass    = document.getElementById('fp_pass').value;
+        const confirm = document.getElementById('fp_confirm').value;
+
+        if (!pass || !confirm) { showAlert('Please fill in both password fields.'); return; }
+        if (pass !== confirm)  { showAlert('Passwords do not match.'); return; }
+        if (pass.length < 8)   { showAlert('Password must be at least 8 characters.'); return; }
+        if (!/[A-Za-z]/.test(pass) || !/[0-9]/.test(pass)) {
+            showAlert('Password must contain at least one letter and one number.');
+            return;
+        }
+
+        const btn = document.getElementById('resetPassBtn');
+        setLoading(btn, true, 'Reset Password');
+        clearAlert();
+
+        try {
+            const res = await post({
+                action: 'reset_pass',
+                email: verifiedEmail,
+                otp: verifiedOtp,
+                password: pass,
+                confirm_password: confirm
+            });
+            if (res.success) {
+                showAlert('✅ ' + res.message, 'success');
+                btn.disabled = true;
+                setTimeout(() => {
+                    closeModal();
+                    document.getElementById('email').value = verifiedEmail;
+                    document.getElementById('password').focus();
+                }, 2500);
+            } else {
+                showAlert(res.message);
+            }
+        } catch (e) { showAlert('Network error. Please try again.'); }
+        finally { if (!document.getElementById('resetPassBtn').disabled) setLoading(btn, false, 'Reset Password'); }
+    });
+
+    // ── Enter key support ─────────────────────────────────────────────────────
+    document.getElementById('fp_email').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('sendOtpBtn').click();
+    });
+    document.getElementById('fp_confirm').addEventListener('keydown', e => {
+        if (e.key === 'Enter') document.getElementById('resetPassBtn').click();
+    });
+
+})();
+</script>
+
+<script src="/js/pwa.js"></script>
+</body>
+</html>

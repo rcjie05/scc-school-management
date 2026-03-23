@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment — St. Cecilia's College-Cebu, Inc.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --red:    #8b0000;
+            --red-lt: #a31515;
+            --gold:   #c8a951;
+            --gold-lt:#e8c96a;
+            --dark:   #1e293b;
+            --gray:   #64748b;
+            --border: #e2e8f0;
+            --cream:  #fdf8f0;
+        }
+        body { font-family: 'Lato', sans-serif; background: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── Topbar ── */
+        .topbar { background: var(--red); color: white; font-size:.73rem; padding:.35rem 2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.4rem; border-bottom:2px solid var(--gold); }
+        .topbar a { color: var(--gold-lt); text-decoration: none; }
+        .topbar-right { display:flex; gap:1.5rem; }
+
+        /* ── Navbar ── */
+        .navbar { background:white; border-bottom:3px solid var(--red); display:flex; align-items:center; justify-content:space-between; padding:.6rem 2rem; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
+        .nav-brand { display:flex; align-items:center; gap:.85rem; text-decoration:none; }
+        .nav-logo { width:52px; height:52px; border-radius:50%; background:var(--red); border:2.5px solid var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:800; font-size:.78rem; color:var(--gold); text-align:center; line-height:1.2; overflow:hidden; }
+        .nav-logo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .nav-name strong { display:block; font-family:'Playfair Display',serif; font-size:.92rem; color:var(--red); font-weight:700; }
+        .nav-name small { font-size:.68rem; color:var(--gray); }
+        .nav-links { display:flex; gap:.15rem; align-items:center; }
+        .nav-links a { color:var(--dark); text-decoration:none; font-size:.8rem; font-weight:700; padding:.45rem .8rem; border-radius:4px; text-transform:uppercase; letter-spacing:.4px; transition:background .2s,color .2s; }
+        .nav-links a:hover { background:var(--red); color:white; }
+        .nav-links a.active { background:var(--red); color:white; }
+        .nav-enroll { background:var(--gold) !important; color:var(--dark) !important; }
+
+        /* ── Main layout ── */
+        .main-wrap { flex:1; display:flex; justify-content:center; align-items:flex-start; padding:2.5rem 1rem; min-height:0; }
+
+        /* ── Form container (hero + card) ── */
+        .form-container { width:100%; max-width:680px; display:flex; flex-direction:column; gap:0; }
+
+        /* ── Hero Banner ── */
+        .hero-banner { background:linear-gradient(135deg,#2d0000 0%,#8b0000 70%,#4a0000 100%); border-radius:12px 12px 0 0; padding:2.5rem 3rem 2rem; color:white; }
+        .hero-tag { display:inline-block; background:var(--gold); color:var(--dark); font-size:.72rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; padding:.3rem .9rem; border-radius:3px; margin-bottom:.9rem; }
+        .hero-banner h1 { font-family:'Playfair Display',serif; font-size:clamp(1.6rem,3vw,2.4rem); font-weight:800; line-height:1.2; text-shadow:0 2px 12px rgba(0,0,0,0.4); margin-bottom:.6rem; }
+        .hero-banner h1 em { color:var(--gold-lt); font-style:italic; }
+        .gold-bar { width:48px; height:3px; background:var(--gold); border-radius:2px; margin-bottom:.9rem; }
+        .hero-banner p { font-size:.88rem; opacity:.8; line-height:1.65; margin-bottom:1.25rem; }
+        .hero-links { display:flex; gap:.75rem; flex-wrap:wrap; }
+        .hero-links a { display:inline-block; font-size:.78rem; font-weight:700; padding:.5rem 1.1rem; border-radius:4px; text-decoration:none; text-transform:uppercase; letter-spacing:.4px; transition:all .2s; }
+        .hl-gold { background:var(--gold); color:var(--dark); }
+        .hl-ghost { border:1.5px solid rgba(255,255,255,0.5); color:white; }
+        .hl-ghost:hover { background:rgba(255,255,255,0.1); }
+
+        /* ── Hero/slideshow side (hidden) ── */
+        .hero-side { display:none; }
+
+        /* ── Enrollment side panel ── */
+        .enroll-side { width:100%; flex-shrink:0; background:var(--cream); display:flex; flex-direction:column; overflow:hidden; border-radius:0 0 12px 12px; box-shadow:0 8px 40px rgba(0,0,0,0.13); }
+
+        /* ── Panel header ── */
+        .enroll-head { background:var(--red); padding:2.25rem 2.5rem 1.5rem; text-align:center; border-bottom:4px solid var(--gold); flex-shrink:0; }
+        .enroll-logo { width:90px; height:90px; border-radius:50%; background:white; border:3px solid var(--gold); display:flex; align-items:center; justify-content:center; overflow:hidden; margin:0 auto 1rem; }
+        .enroll-logo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .enroll-head h2 { font-family:'Playfair Display',serif; font-size:1.25rem; color:white; font-weight:700; margin-bottom:.3rem; }
+        .enroll-head p { font-size:.82rem; color:rgba(255,255,255,0.65); }
+
+        /* ── Step progress bar ── */
+        .progress-wrap { height:4px; background:rgba(139,0,0,0.15); flex-shrink:0; }
+        .progress-bar { height:100%; background:var(--gold); transition:width .4s ease; }
+
+        /* ── Step tabs ── */
+        .step-tabs { display:flex; border-bottom:1px solid var(--border); background:white; flex-shrink:0; }
+        .step-tab { flex:1; padding:.75rem .3rem; text-align:center; font-size:.72rem; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.4px; border-bottom:3px solid transparent; transition:all .2s; }
+        .step-tab.active { color:var(--red); border-bottom-color:var(--red); }
+        .step-tab.done { color:var(--gold); border-bottom-color:var(--gold); }
+
+        /* ── Panel body ── */
+        .enroll-body { flex:1; padding:2rem 2.5rem; }
+
+        /* ── Section titles ── */
+        .section-title { font-size:.75rem; font-weight:900; text-transform:uppercase; letter-spacing:1px; color:var(--red); border-bottom:1.5px solid var(--border); padding-bottom:.5rem; margin:1.5rem 0 1rem; }
+        .section-title:first-child { margin-top:0; }
+
+        /* ── Form fields ── */
+        .field-group { margin-bottom:1.1rem; }
+        .field-label { display:block; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--dark); margin-bottom:.4rem; }
+        .req { color:var(--red); }
+        .field-input, .field-select { width:100%; padding:.8rem 1rem; border:1.5px solid var(--border); border-radius:8px; font-family:'Lato',sans-serif; font-size:.95rem; color:var(--dark); background:white; transition:border-color .2s,box-shadow .2s; appearance:none; -webkit-appearance:none; }
+        .field-input:focus, .field-select:focus { outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(139,0,0,0.1); }
+        .field-input::placeholder { color:#b0b8c4; }
+        .field-input.error { border-color:#dc2626; }
+        textarea.field-input { resize:vertical; min-height:70px; }
+        .select-wrap { position:relative; }
+        .select-wrap::after { content:'▾'; position:absolute; right:.8rem; top:50%; transform:translateY(-50%); color:var(--gray); pointer-events:none; font-size:.75rem; }
+        .field-error { font-size:.7rem; color:#dc2626; margin-top:.25rem; display:none; }
+        .field-error.show { display:block; }
+
+        /* ── Grid layouts ── */
+        .two-col { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+        .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.75rem; }
+
+        /* ── Photo upload ── */
+        .photo-upload { border:2px dashed var(--border); border-radius:8px; padding:1.25rem; text-align:center; cursor:pointer; transition:border-color .2s; background:white; }
+        .photo-upload:hover { border-color:var(--gold); }
+        .photo-upload input[type="file"] { display:none; }
+        .photo-preview { width:90px; height:90px; border-radius:50%; object-fit:cover; display:none; margin:0 auto .5rem; border:3px solid var(--gold); }
+        .photo-hint { font-size:.75rem; color:var(--gray); margin-top:.25rem; }
+
+        /* ── Buttons ── */
+        .btn-row { display:flex; gap:.6rem; margin-top:1.5rem; }
+        .btn-primary { flex:1; background:var(--red); color:white; border:none; padding:.9rem; border-radius:8px; font-family:'Lato',sans-serif; font-size:.95rem; font-weight:900; letter-spacing:.5px; text-transform:uppercase; cursor:pointer; transition:background .2s,transform .1s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; }
+        .btn-primary:hover { background:var(--red-lt); transform:translateY(-1px); box-shadow:0 6px 22px rgba(139,0,0,0.3); }
+        .btn-primary:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+        .btn-secondary { background:white; color:var(--dark); border:1.5px solid var(--border); padding:.9rem 1.25rem; border-radius:8px; font-family:'Lato',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:border-color .2s,color .2s; }
+        .btn-secondary:hover { border-color:var(--red); color:var(--red); }
+        .btn-gold { background:var(--gold) !important; color:var(--dark) !important; }
+        .btn-gold:hover { background:var(--gold-lt) !important; box-shadow:0 6px 22px rgba(200,169,81,0.35) !important; }
+
+        /* ── Spinner ── */
+        .spinner { width:16px; height:16px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin .7s linear infinite; display:none; flex-shrink:0; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        /* ── Password strength ── */
+        .strength-bars { display:flex; gap:3px; margin-top:.4rem; }
+        .strength-bar { flex:1; height:3px; border-radius:2px; background:var(--border); transition:background .3s; }
+        .strength-label { font-size:.68rem; color:var(--gray); margin-top:.25rem; min-height:1em; }
+
+        /* ── Info box ── */
+        .info-box { background:#fff8e6; border:1px solid var(--gold); border-radius:8px; padding:.9rem 1rem; font-size:.82rem; color:#78350f; line-height:1.6; margin-top:.9rem; }
+        .info-box strong { display:block; color:var(--red); margin-bottom:.2rem; font-size:.84rem; }
+        .info-box a { color:var(--red); font-weight:700; }
+
+        /* ── Alerts ── */
+        .alert { padding:.85rem 1rem; border-radius:8px; font-size:.85rem; margin-bottom:1rem; }
+        .alert-error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+
+        /* ── Review screen ── */
+        .review-section { margin-bottom:1.25rem; }
+        .review-section-title { font-size:.75rem; font-weight:900; text-transform:uppercase; letter-spacing:1px; color:var(--red); margin-bottom:.6rem; padding-bottom:.35rem; border-bottom:1px solid var(--border); }
+        .review-grid { display:grid; grid-template-columns:1fr 1fr; gap:.35rem .85rem; }
+        .review-row { display:flex; flex-direction:column; padding:.35rem 0; }
+        .review-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--gray); }
+        .review-value { font-size:.88rem; color:var(--dark); margin-top:.1rem; word-break:break-word; }
+
+        /* ── Terms ── */
+        .terms-row { display:flex; align-items:flex-start; gap:.6rem; margin:.9rem 0; font-size:.84rem; color:var(--gray); line-height:1.5; }
+        .terms-row input[type="checkbox"] { margin-top:2px; accent-color:var(--red); flex-shrink:0; }
+        .terms-row a { color:var(--red); font-weight:700; text-decoration:none; }
+
+        /* ── Success screen ── */
+        .success-screen { display:none; text-align:center; padding:2.5rem 1rem; }
+        .success-icon { width:72px; height:72px; background:linear-gradient(135deg,var(--red),var(--red-lt)); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem; color:white; }
+        .success-screen h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--dark); margin-bottom:.4rem; }
+        .success-screen p { font-size:.88rem; color:var(--gray); line-height:1.65; margin-bottom:.5rem; }
+        .ref-badge { display:inline-block; background:var(--red); color:white; font-size:.82rem; font-weight:700; padding:.4rem 1rem; border-radius:20px; letter-spacing:.5px; margin:.5rem 0 1rem; }
+
+        /* ── Panel footer ── */
+        .enroll-footer { text-align:center; padding-top:1.5rem; border-top:1px solid var(--border); font-size:.85rem; color:var(--gray); line-height:1.9; }
+        .enroll-footer a { color:var(--red); font-weight:700; text-decoration:none; }
+
+        /* ── Page footer ── */
+        .page-footer { background:var(--red); border-top:3px solid var(--gold); padding:.85rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+        .page-footer p { font-size:.72rem; color:rgba(255,255,255,0.5); }
+        .page-footer a { font-size:.72rem; color:var(--gold-lt); text-decoration:none; }
+
+        /* ── Responsive ── */
+        @media (max-width:720px) {
+            .main-wrap { padding:1rem .5rem; }
+            .hero-banner { padding:1.75rem 1.5rem 1.5rem; border-radius:8px 8px 0 0; }
+            .enroll-side { border-radius:0 0 8px 8px; }
+            .navbar { padding:.6rem 1rem; }
+            .nav-links { display:none; }
+            .topbar-left { display:none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left"><span>#AllevoSCC — Challenges Minds · Moves Hearts · Changes Lives</span></div>
+    <div class="topbar-right">
+        <span>📞 <a href="tel:032-268-4746">(032) 268-4746</a></span>
+        <span>✉ <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a></span>
+    </div>
+</div>
+
+<nav class="navbar">
+    <a href="index.html" class="nav-brand">
+        <div class="nav-logo">
+            <img src="images/logo.png" alt="SCC" onerror="this.style.display='none'">
+        </div>
+        <div class="nav-name">
+            <strong>St. Cecilia's College-Cebu, Inc.</strong>
+            <small>Poblacion Ward II, Minglanilla, Cebu — Est. 1999</small>
+        </div>
+    </a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#enrollment">Admissions</a>
+        <a href="index.html#about">About Us</a>
+        <a href="login.html">Login</a>
+        <a href="enrollment.html" class="nav-enroll active">Enroll Now</a>
+    </div>
+</nav>
+
+<div class="main-wrap">
+    <div class="form-container">
+
+        <!-- ── Hero Banner ── -->
+        <div class="hero-banner">
+            <div class="hero-tag">Online Enrollment</div>
+            <h1>Begin Your <em>Cecilian Journey!</em></h1>
+            <div class="gold-bar"></div>
+            <p>Join St. Cecilia's College-Cebu and be part of a community that Challenges Minds, Moves Hearts, and Changes Lives.</p>
+            <div class="hero-links">
+                <a href="login.html" class="hl-ghost">← Back to Login</a>
+                <a href="index.html" class="hl-gold">View Programs</a>
+            </div>
+        </div>
+
+    <!-- ── Enrollment side panel ── -->
+    <div class="enroll-side">
+
+        <div class="enroll-head">
+            <div class="enroll-logo">
+                <img src="images/logo.png" alt="SCC Logo" onerror="this.parentNode.innerHTML='SCC'">
+            </div>
+            <h2>St. Cecilia's College-Cebu, Inc.</h2>
+            <p>Student Enrollment Form &middot; A.Y. <span id="ayLabel"></span></p>
+        </div>
+
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:20%"></div></div>
+
+        <div class="step-tabs">
+            <div class="step-tab active" id="tab1">1. Personal</div>
+            <div class="step-tab" id="tab2">2. Academic</div>
+            <div class="step-tab" id="tab3">3. Family</div>
+            <div class="step-tab" id="tab4">4. Account</div>
+            <div class="step-tab" id="tab5">5. Review</div>
+        </div>
+
+        <div class="enroll-body">
+
+            <!-- ══ STEP 1: Personal Information ══ -->
+            <div id="step1">
+                <div class="section-title">ID / Profile Photo</div>
+                <div class="field-group">
+                    <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                        <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(this)">
+                        <img id="photoPreview" class="photo-preview" alt="Preview">
+                        <div id="photoPlaceholder">
+                            <div style="font-size:1.6rem;margin-bottom:.3rem;">📷</div>
+                            <p style="font-size:.8rem;font-weight:700;color:var(--dark);margin-bottom:.15rem;">Click to upload photo</p>
+                            <p class="photo-hint">JPG, PNG · Max 5MB · Passport size preferred</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Full Name</div>
+                <div class="three-col">
+                    <div class="field-group">
+                        <label class="field-label">Last Name <span class="req">*</span></label>
+                        <input type="text" class="field-input" id="lastName" placeholder="Dela Cruz" required>
+                        <div class="field-error" id="err-lastName">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">First Name <span class="req">*</span></label>
+                        <input type="text" class="field-input" id="firstName" placeholder="Juan" required>
+                        <div class="field-error" id="err-firstName">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Middle Name</label>
+                        <input type="text" class="field-input" id="middleName" placeholder="Santos">
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Suffix</label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="suffix">
+                                <option value="">None</option>
+                                <option>Jr.</option><option>Sr.</option>
+                                <option>II</option><option>III</option><option>IV</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Nickname</label>
+                        <input type="text" class="field-input" id="nickname" placeholder="Jun">
+                    </div>
+                </div>
+
+                <div class="section-title">Personal Details</div>
+                <div class="three-col">
+                    <div class="field-group">
+                        <label class="field-label">Date of Birth <span class="req">*</span></label>
+                        <input type="date" class="field-input" id="dob" required>
+                        <div class="field-error" id="err-dob">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Sex <span class="req">*</span></label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="sex" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="field-error" id="err-sex">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Civil Status</label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="civilStatus">
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Separated">Separated</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Nationality</label>
+                        <input type="text" class="field-input" id="nationality" value="Filipino">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Religion</label>
+                        <input type="text" class="field-input" id="religion" placeholder="e.g. Roman Catholic">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Place of Birth <span class="req">*</span></label>
+                    <input type="text" class="field-input" id="placeOfBirth" placeholder="City/Municipality, Province" required>
+                    <div class="field-error" id="err-placeOfBirth">Required</div>
+                </div>
+
+                <div class="section-title">Contact &amp; Address</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Mobile Number <span class="req">*</span></label>
+                        <input type="tel" class="field-input" id="mobileNumber" placeholder="09XX-XXX-XXXX" required>
+                        <div class="field-error" id="err-mobileNumber">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Landline</label>
+                        <input type="tel" class="field-input" id="landlineNumber" placeholder="(032) XXXX-XXXX">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Home Address <span class="req">*</span></label>
+                    <textarea class="field-input" id="homeAddress" placeholder="House No., Street, Barangay, City/Municipality, Province, ZIP" rows="2" required></textarea>
+                    <div class="field-error" id="err-homeAddress">Required</div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-primary btn-gold" onclick="nextStep(1)">Next: Academic Details →</button>
+                </div>
+            </div>
+
+            <!-- ══ STEP 2: Academic Details ══ -->
+            <div id="step2" style="display:none;">
+                <div class="section-title">Student ID</div>
+                <div class="field-group">
+                    <label class="field-label">LRN / Student ID <span class="req">*</span></label>
+                    <input type="text" class="field-input" id="studentId" placeholder="e.g. SCC-24-00001 or 123456789012" required>
+                    <div class="field-error" id="err-studentId">Required</div>
+                </div>
+
+                <div class="section-title">Enrollment Type</div>
+                <div class="field-group">
+                    <label class="field-label">Type of Enrollment <span class="req">*</span></label>
+                    <div class="select-wrap">
+                        <select class="field-select" id="enrollmentType" required>
+                            <option value="New Student">New Student</option>
+                            <option value="Transferee">Transferee</option>
+                            <option value="Returnee">Returnee</option>
+                            <option value="Cross Enrollee">Cross Enrollee</option>
+                            <option value="Foreign Student">Foreign Student</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">Program &amp; Section</div>
+                <div class="field-group">
+                    <label class="field-label">Course / Program <span class="req">*</span></label>
+                    <div class="select-wrap">
+                        <select class="field-select" id="course" required onchange="onCourseChange()">
+                            <option value="">— Select Course/Program —</option>
+                        </select>
+                    </div>
+                    <div class="field-error" id="err-course">Required</div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Year Level <span class="req">*</span></label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="yearLevel" required onchange="fetchSections()">
+                                <option value="">Select</option>
+                                <option>1st Year</option><option>2nd Year</option>
+                                <option>3rd Year</option><option>4th Year</option>
+                            </select>
+                        </div>
+                        <div class="field-error" id="err-yearLevel">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Semester</label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="semester" onchange="fetchSections()">
+                                <option value="">Select</option>
+                                <option value="1st Semester">1st Semester</option>
+                                <option value="2nd Semester">2nd Semester</option>
+                                <option value="Summer">Summer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">School Year</label>
+                        <input type="text" class="field-input" id="schoolYear" placeholder="e.g. 2025-2026">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Section <span class="req">*</span></label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="sectionId">
+                                <option value="">— Select course &amp; year first —</option>
+                            </select>
+                        </div>
+                        <div class="field-error" id="err-sectionId">Please select a section</div>
+                        <div id="sectionInfo" style="margin-top:.3rem;font-size:.72rem;"></div>
+                    </div>
+                </div>
+
+                <div class="section-title">Previous School</div>
+                <div class="field-group">
+                    <label class="field-label">Previous School Name</label>
+                    <input type="text" class="field-input" id="prevSchool" placeholder="Name of last school attended">
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">School Address</label>
+                        <input type="text" class="field-input" id="prevSchoolAddr" placeholder="City/Municipality">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Last Year Attended</label>
+                        <input type="text" class="field-input" id="prevSchoolYear" placeholder="e.g. 2023-2024">
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="prevStep(2)">← Back</button>
+                    <button class="btn-primary btn-gold" onclick="nextStep(2)">Next: Family Background →</button>
+                </div>
+            </div>
+
+            <!-- ══ STEP 3: Family Background ══ -->
+            <div id="step3" style="display:none;">
+                <div class="section-title">Father's Information</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Father's Full Name</label>
+                        <input type="text" class="field-input" id="fatherName" placeholder="Last, First Middle">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Occupation</label>
+                        <input type="text" class="field-input" id="fatherOccupation" placeholder="Occupation / Employer">
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Contact Number</label>
+                        <input type="tel" class="field-input" id="fatherContact" placeholder="09XX-XXX-XXXX">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Monthly Income</label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="fatherIncome">
+                                <option value="">Prefer not to say</option>
+                                <option>Below ₱10,000</option>
+                                <option>₱10,001 – ₱20,000</option>
+                                <option>₱20,001 – ₱40,000</option>
+                                <option>₱40,001 – ₱60,000</option>
+                                <option>Above ₱60,000</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Mother's Information</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Mother's Full Name</label>
+                        <input type="text" class="field-input" id="motherName" placeholder="Last, First Middle">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Occupation</label>
+                        <input type="text" class="field-input" id="motherOccupation" placeholder="Occupation / Employer">
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Contact Number</label>
+                        <input type="tel" class="field-input" id="motherContact" placeholder="09XX-XXX-XXXX">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Monthly Income</label>
+                        <div class="select-wrap">
+                            <select class="field-select" id="motherIncome">
+                                <option value="">Prefer not to say</option>
+                                <option>Below ₱10,000</option>
+                                <option>₱10,001 – ₱20,000</option>
+                                <option>₱20,001 – ₱40,000</option>
+                                <option>₱40,001 – ₱60,000</option>
+                                <option>Above ₱60,000</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Guardian (if different from parents)</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Guardian's Full Name</label>
+                        <input type="text" class="field-input" id="guardianName" placeholder="Full name">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Relationship</label>
+                        <input type="text" class="field-input" id="guardianRelation" placeholder="e.g. Uncle, Aunt">
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Contact Number</label>
+                        <input type="tel" class="field-input" id="guardianContact" placeholder="09XX-XXX-XXXX">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Guardian's Address</label>
+                        <input type="text" class="field-input" id="guardianAddress" placeholder="City/Municipality">
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="prevStep(3)">← Back</button>
+                    <button class="btn-primary btn-gold" onclick="nextStep(3)">Next: Account Setup →</button>
+                </div>
+            </div>
+
+            <!-- ══ STEP 4: Account Setup ══ -->
+            <div id="step4" style="display:none;">
+                <div class="section-title">Login Credentials</div>
+                <div class="field-group">
+                    <label class="field-label">Email Address <span class="req">*</span></label>
+                    <input type="email" class="field-input" id="email" placeholder="you@email.com" required>
+                    <div class="field-error" id="err-email">Enter a valid email address</div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Password <span class="req">*</span></label>
+                    <input type="password" class="field-input" id="password" placeholder="Minimum 8 characters" required minlength="8">
+                    <div class="strength-bars">
+                        <div class="strength-bar" id="sb1"></div><div class="strength-bar" id="sb2"></div>
+                        <div class="strength-bar" id="sb3"></div><div class="strength-bar" id="sb4"></div>
+                    </div>
+                    <div class="strength-label" id="strengthLabel"></div>
+                    <div class="field-error" id="err-password">Minimum 8 characters required</div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Confirm Password <span class="req">*</span></label>
+                    <input type="password" class="field-input" id="confirmPassword" placeholder="Re-enter password" required>
+                    <div class="field-error" id="err-confirmPassword">Passwords do not match</div>
+                </div>
+
+                <div class="section-title">Emergency Contact</div>
+                <div class="two-col">
+                    <div class="field-group">
+                        <label class="field-label">Full Name <span class="req">*</span></label>
+                        <input type="text" class="field-input" id="emergencyName" placeholder="Full name" required>
+                        <div class="field-error" id="err-emergencyName">Required</div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Relationship <span class="req">*</span></label>
+                        <input type="text" class="field-input" id="emergencyRelation" placeholder="e.g. Mother, Father" required>
+                        <div class="field-error" id="err-emergencyRelation">Required</div>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Contact Number <span class="req">*</span></label>
+                    <input type="tel" class="field-input" id="emergencyContact" placeholder="09XX-XXX-XXXX" required>
+                    <div class="field-error" id="err-emergencyContact">Required</div>
+                </div>
+
+                <div class="info-box">
+                    <strong>📋 Requirements Ready?</strong>
+                    Have your LRN/Student ID, previous school records, and a valid email address ready. Your application will be reviewed by the Registrar's Office within 1–3 business days.
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="prevStep(4)">← Back</button>
+                    <button class="btn-primary btn-gold" onclick="nextStep(4)">Review &amp; Submit →</button>
+                </div>
+            </div>
+
+            <!-- ══ STEP 5: Review & Submit ══ -->
+            <div id="step5" style="display:none;">
+                <div id="reviewContent"></div>
+                <div class="terms-row">
+                    <input type="checkbox" id="agreeTerms">
+                    <label for="agreeTerms">I certify that all information provided is true and correct. I agree to the <a href="#">Terms and Conditions</a> of St. Cecilia's College-Cebu, Inc.</label>
+                </div>
+                <div id="submitError" class="alert alert-error" style="display:none;"></div>
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="prevStep(5)">← Back</button>
+                    <button class="btn-primary" id="submitBtn" onclick="submitForm()">
+                        <span id="submitLabel">Submit Enrollment</span>
+                        <div class="spinner" id="submitSpinner"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ Success Screen ══ -->
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">✓</div>
+                <h3>Application Submitted!</h3>
+                <p>Your enrollment application has been received. The Registrar's Office will review it within 1–3 business days.</p>
+                <div class="ref-badge" id="refNumber">REF: —</div>
+                <p style="font-size:.75rem;">Please save your reference number. You will receive an email once your application is approved.</p>
+                <div class="btn-row" style="justify-content:center;margin-top:1.25rem;">
+                    <a href="login.html" class="btn-primary" style="text-decoration:none;max-width:200px;">Go to Login →</a>
+                </div>
+            </div>
+
+            <div class="enroll-footer">
+                Already have an account? <a href="login.html">Login here</a>
+                &nbsp;&middot;&nbsp;
+                <a href="index.html">← Back to Home</a>
+            </div>
+
+        </div><!-- /enroll-body -->
+
+    </div><!-- /enroll-side -->
+    </div><!-- /form-container -->
+</div><!-- /main-wrap -->
+
+<div class="page-footer">
+    <p>&copy; 2025 St. Cecilia's College-Cebu, Inc. &middot; All rights reserved</p>
+    <a href="https://stcecilia.edu.ph" target="_blank">stcecilia.edu.ph</a>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 5;
+
+// Set current school year
+(function() {
+    const now = new Date(), yr = now.getFullYear();
+    const sy = now.getMonth() >= 5 ? yr+'-'+(yr+1) : (yr-1)+'-'+yr;
+    document.getElementById('schoolYear').value = sy;
+    document.getElementById('ayLabel').textContent = sy;
+})();
+
+// Photo preview
+function previewPhoto(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('photoPreview').src = e.target.result;
+        document.getElementById('photoPreview').style.display = 'block';
+        document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+// Password strength
+document.getElementById('password').addEventListener('input', function() {
+    const v = this.value; let score = 0;
+    if (v.length >= 8) score++; if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++; if (/[^A-Za-z0-9]/.test(v)) score++;
+    const colors = ['#ef4444','#f59e0b','#3b82f6','#16a34a'];
+    const labels = ['Weak','Fair','Good','Strong'];
+    for (let i = 1; i <= 4; i++)
+        document.getElementById('sb'+i).style.background = i <= score ? colors[score-1] : 'var(--border)';
+    const lbl = document.getElementById('strengthLabel');
+    lbl.textContent = v.length ? labels[score-1]+' password' : '';
+    lbl.style.color = v.length ? colors[score-1] : 'var(--gray)';
+});
+
+// Load courses
+async function loadCourses() {
+    try {
+        const res = await fetch('php/api/get_courses_public.php'), data = await res.json();
+        const sel = document.getElementById('course');
+        sel.innerHTML = '<option value="">— Select Course/Program —</option>';
+        if (data.success && data.courses.length) {
+            data.courses.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c.course_name;
+                o.textContent = c.course_name + (c.course_code ? ' ('+c.course_code+')' : '');
+                sel.appendChild(o);
+            });
+        } else {
+            ['Computer Science','Information Technology','Business Administration','Engineering','Education','Nursing'].forEach(c => {
+                const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+            });
+        }
+    } catch(e) { console.error('Course load failed', e); }
+}
+loadCourses();
+function onCourseChange() { fetchSections(); }
+
+async function fetchSections() {
+    const course = document.getElementById('course').value;
+    const yearLevel = document.getElementById('yearLevel').value;
+    const semester = document.getElementById('semester').value;
+    const sel = document.getElementById('sectionId'), infoDiv = document.getElementById('sectionInfo');
+    sel.innerHTML = '<option value="">Loading…</option>'; sel.disabled = true; infoDiv.innerHTML = '';
+    if (!course || !yearLevel) {
+        sel.innerHTML = '<option value="">— Select course and year level first —</option>';
+        sel.disabled = false; return;
+    }
+    try {
+        const params = new URLSearchParams({ course, year_level: yearLevel });
+        if (semester) params.append('semester', semester);
+        const res = await fetch('php/api/get_sections_public.php?'+params), data = await res.json();
+        sel.innerHTML = '<option value="">— Select a section —</option>';
+        if (data.success && data.sections.length) {
+            data.sections.forEach(s => {
+                const o = document.createElement('option'); o.value = s.id;
+                o.textContent = s.section_name+' ('+s.section_code+')'+(s.school_year?' · '+s.school_year:'');
+                sel.appendChild(o);
+            });
+            infoDiv.innerHTML = '<span style="color:var(--red);font-weight:700;">✓ '+data.sections.length+' section(s) available</span>';
+        } else {
+            sel.innerHTML = '<option value="">No sections available</option>';
+            infoDiv.innerHTML = '<span style="color:#92400e;">⚠️ No active sections found. You may proceed without selecting one.</span>';
+        }
+    } catch(e) { sel.innerHTML = '<option value="">Error loading sections</option>'; }
+    sel.disabled = false;
+}
+
+// Error helpers
+function showError(id, msg) {
+    const el = document.getElementById('err-'+id);
+    if (el) { el.textContent = msg||'Required'; el.classList.add('show'); }
+    const inp = document.getElementById(id); if (inp) inp.classList.add('error');
+}
+function clearError(id) {
+    const el = document.getElementById('err-'+id); if (el) el.classList.remove('show');
+    const inp = document.getElementById(id); if (inp) inp.classList.remove('error');
+}
+
+function validateStep(step) {
+    let valid = true;
+    if (step === 1) {
+        [{id:'lastName',label:'Last name is required'},{id:'firstName',label:'First name is required'},
+         {id:'dob',label:'Date of birth is required'},{id:'sex',label:'Please select sex'},
+         {id:'placeOfBirth',label:'Place of birth is required'},{id:'mobileNumber',label:'Mobile number is required'},
+         {id:'homeAddress',label:'Home address is required'}].forEach(f => {
+            clearError(f.id);
+            if (!document.getElementById(f.id).value.trim()) { showError(f.id, f.label); valid = false; }
+        });
+    }
+    if (step === 2) {
+        clearError('studentId'); clearError('course'); clearError('yearLevel');
+        if (!document.getElementById('studentId').value.trim()) { showError('studentId','LRN/Student ID is required'); valid = false; }
+        if (!document.getElementById('course').value)            { showError('course','Please select a course'); valid = false; }
+        if (!document.getElementById('yearLevel').value)         { showError('yearLevel','Please select year level'); valid = false; }
+    }
+    if (step === 4) {
+        const email = document.getElementById('email').value.trim();
+        const pw = document.getElementById('password').value;
+        const cpw = document.getElementById('confirmPassword').value;
+        ['email','password','confirmPassword','emergencyName','emergencyRelation','emergencyContact'].forEach(clearError);
+        if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('email','Enter a valid email address'); valid = false; }
+        if (pw.length < 8)  { showError('password','Minimum 8 characters required'); valid = false; }
+        if (pw !== cpw)     { showError('confirmPassword','Passwords do not match'); valid = false; }
+        if (!document.getElementById('emergencyName').value.trim())     { showError('emergencyName','Required'); valid = false; }
+        if (!document.getElementById('emergencyRelation').value.trim()) { showError('emergencyRelation','Required'); valid = false; }
+        if (!document.getElementById('emergencyContact').value.trim())  { showError('emergencyContact','Required'); valid = false; }
+    }
+    return valid;
+}
+
+function nextStep(from) { if (!validateStep(from)) return; goToStep(from+1); }
+function prevStep(from) { goToStep(from-1); }
+
+function goToStep(step) {
+    document.getElementById('step'+currentStep).style.display = 'none';
+    currentStep = step;
+    document.getElementById('step'+currentStep).style.display = 'block';
+    for (let i = 1; i <= totalSteps; i++) {
+        const tab = document.getElementById('tab'+i);
+        tab.className = 'step-tab'+(i===step?' active':i<step?' done':'');
+    }
+    document.getElementById('progressBar').style.width = (step/totalSteps*100)+'%';
+    if (step === totalSteps) buildReview();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Build review
+function buildReview() {
+    const v = val => val || '<span style="color:var(--gray);font-style:italic;">Not provided</span>';
+    const fullName = [document.getElementById('lastName').value, document.getElementById('firstName').value,
+                      document.getElementById('middleName').value, document.getElementById('suffix').value].filter(Boolean).join(', ');
+    const secSel = document.getElementById('sectionId');
+    document.getElementById('reviewContent').innerHTML = `
+        <div class="review-section">
+            <div class="review-section-title">Personal Information</div>
+            <div class="review-grid">
+                ${rv('Full Name',fullName)} ${rv('Date of Birth',v(document.getElementById('dob').value))}
+                ${rv('Sex',v(document.getElementById('sex').value))} ${rv('Civil Status',v(document.getElementById('civilStatus').value))}
+                ${rv('Nationality',v(document.getElementById('nationality').value))} ${rv('Place of Birth',v(document.getElementById('placeOfBirth').value))}
+                ${rv('Mobile',v(document.getElementById('mobileNumber').value))} ${rv('Home Address',v(document.getElementById('homeAddress').value))}
+            </div>
+        </div>
+        <div class="review-section">
+            <div class="review-section-title">Academic Details</div>
+            <div class="review-grid">
+                ${rv('LRN / Student ID',v(document.getElementById('studentId').value))}
+                ${rv('Enrollment Type',v(document.getElementById('enrollmentType').value))}
+                ${rv('Course / Program',v(document.getElementById('course').value))}
+                ${rv('Year Level',v(document.getElementById('yearLevel').value))}
+                ${rv('Semester',v(document.getElementById('semester').value))}
+                ${rv('School Year',v(document.getElementById('schoolYear').value))}
+                ${rv('Section',secSel.value ? secSel.options[secSel.selectedIndex]?.text : '— None selected —')}
+                ${rv('Previous School',v(document.getElementById('prevSchool').value))}
+            </div>
+        </div>
+        <div class="review-section">
+            <div class="review-section-title">Family Background</div>
+            <div class="review-grid">
+                ${rv("Father's Name",v(document.getElementById('fatherName').value))}
+                ${rv("Father's Contact",v(document.getElementById('fatherContact').value))}
+                ${rv("Mother's Name",v(document.getElementById('motherName').value))}
+                ${rv("Mother's Contact",v(document.getElementById('motherContact').value))}
+                ${rv("Guardian",v(document.getElementById('guardianName').value))}
+                ${rv("Guardian's Contact",v(document.getElementById('guardianContact').value))}
+            </div>
+        </div>
+        <div class="review-section">
+            <div class="review-section-title">Account &amp; Emergency Contact</div>
+            <div class="review-grid">
+                ${rv('Email',v(document.getElementById('email').value))} ${rv('Password','••••••••')}
+                ${rv('Emergency Contact',v(document.getElementById('emergencyName').value))}
+                ${rv('Relationship',v(document.getElementById('emergencyRelation').value))}
+                ${rv('Emergency Phone',v(document.getElementById('emergencyContact').value))}
+            </div>
+        </div>`;
+}
+function rv(label, value) {
+    return `<div class="review-row"><div class="review-label">${label}</div><div class="review-value">${value}</div></div>`;
+}
+
+// Submit
+async function submitForm() {
+    if (!document.getElementById('agreeTerms').checked) { showSubmitError('Please agree to the Terms and Conditions before submitting.'); return; }
+    const btn = document.getElementById('submitBtn'), label = document.getElementById('submitLabel'), spinner = document.getElementById('submitSpinner');
+    btn.disabled = true; label.textContent = 'Submitting…'; spinner.style.display = 'block';
+    document.getElementById('submitError').style.display = 'none';
+
+    const fullName = [document.getElementById('firstName').value.trim(), document.getElementById('middleName').value.trim(),
+                      document.getElementById('lastName').value.trim(), document.getElementById('suffix').value.trim()].filter(Boolean).join(' ');
+    const fd = new FormData();
+    fd.append('name', fullName);
+    fd.append('email', document.getElementById('email').value.trim());
+    fd.append('student_id', document.getElementById('studentId').value.trim());
+    fd.append('course', document.getElementById('course').value);
+    fd.append('year_level', document.getElementById('yearLevel').value);
+    fd.append('password', document.getElementById('password').value);
+    fd.append('section_id', document.getElementById('sectionId').value||'');
+    fd.append('first_name', document.getElementById('firstName').value.trim());
+    fd.append('middle_name', document.getElementById('middleName').value.trim());
+    fd.append('last_name', document.getElementById('lastName').value.trim());
+    fd.append('suffix', document.getElementById('suffix').value);
+    fd.append('nickname', document.getElementById('nickname').value.trim());
+    fd.append('dob', document.getElementById('dob').value);
+    fd.append('sex', document.getElementById('sex').value);
+    fd.append('civil_status', document.getElementById('civilStatus').value);
+    fd.append('nationality', document.getElementById('nationality').value.trim());
+    fd.append('religion', document.getElementById('religion').value.trim());
+    fd.append('place_of_birth', document.getElementById('placeOfBirth').value.trim());
+    fd.append('mobile_number', document.getElementById('mobileNumber').value.trim());
+    fd.append('landline_number', document.getElementById('landlineNumber').value.trim());
+    fd.append('home_address', document.getElementById('homeAddress').value.trim());
+    fd.append('enrollment_type', document.getElementById('enrollmentType').value);
+    fd.append('semester', document.getElementById('semester').value);
+    fd.append('school_year', document.getElementById('schoolYear').value.trim());
+    fd.append('prev_school', document.getElementById('prevSchool').value.trim());
+    fd.append('prev_school_addr', document.getElementById('prevSchoolAddr').value.trim());
+    fd.append('prev_school_year', document.getElementById('prevSchoolYear').value.trim());
+    fd.append('father_name', document.getElementById('fatherName').value.trim());
+    fd.append('father_occupation', document.getElementById('fatherOccupation').value.trim());
+    fd.append('father_contact', document.getElementById('fatherContact').value.trim());
+    fd.append('father_income', document.getElementById('fatherIncome').value.trim());
+    fd.append('mother_name', document.getElementById('motherName').value.trim());
+    fd.append('mother_occupation', document.getElementById('motherOccupation').value.trim());
+    fd.append('mother_contact', document.getElementById('motherContact').value.trim());
+    fd.append('mother_income', document.getElementById('motherIncome').value.trim());
+    fd.append('guardian_name', document.getElementById('guardianName').value.trim());
+    fd.append('guardian_relation', document.getElementById('guardianRelation').value.trim());
+    fd.append('guardian_contact', document.getElementById('guardianContact').value.trim());
+    fd.append('guardian_address', document.getElementById('guardianAddress').value.trim());
+    fd.append('emergency_contact_name', document.getElementById('emergencyName').value.trim());
+    fd.append('emergency_contact_relation', document.getElementById('emergencyRelation').value.trim());
+    fd.append('emergency_contact_phone', document.getElementById('emergencyContact').value.trim());
+    const photo = document.getElementById('photoInput').files[0]; if (photo) fd.append('photo', photo);
+
+    try {
+        const res = await fetch('php/enrollment.php', {method:'POST', body:fd}), data = await res.json();
+        if (data.success) {
+            document.getElementById('step5').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+            document.getElementById('refNumber').textContent = 'REF: '+(data.ref||data.id||'—');
+            document.getElementById('progressBar').style.width = '100%';
+        } else {
+            showSubmitError(data.message||'Submission failed. Please try again.');
+            btn.disabled = false; label.textContent = 'Submit Enrollment'; spinner.style.display = 'none';
+        }
+    } catch(e) {
+        showSubmitError('Network error. Please check your connection and try again.');
+        btn.disabled = false; label.textContent = 'Submit Enrollment'; spinner.style.display = 'none';
+    }
+}
+function showSubmitError(msg) {
+    const el = document.getElementById('submitError'); el.textContent = msg; el.style.display = 'block';
+    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Slide dots
+const dots = document.querySelectorAll('.dot');
+let cur = 0;
+setInterval(() => { dots[cur].classList.remove('active'); cur=(cur+1)%5; dots[cur].classList.add('active'); }, 4000);
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Opportunities — Saint Cecilia College</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        :root {
+            --red:     #8b0000;
+            --red-mid: #a31515;
+            --red-lt:  #c0392b;
+            --gold:    #c8a951;
+            --gold-lt: #e8c96a;
+            --cream:   #fdf8f0;
+            --white:   #ffffff;
+            --gray:    #64748b;
+            --border:  #e2e8f0;
+            --dark:    #1e293b;
+        }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Lato',sans-serif; background:var(--cream); color:var(--dark); }
+
+        /* ── TOPBAR ── */
+        .topbar { background:var(--red); color:white; font-size:.75rem; padding:.4rem 2.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+        .topbar a { color:var(--gold-lt); text-decoration:none; }
+
+        /* ── NAVBAR ── */
+        nav { background:white; border-bottom:3px solid var(--red); display:flex; align-items:center; justify-content:space-between; padding:.75rem 2.5rem; box-shadow:0 2px 12px rgba(0,0,0,0.08); position:sticky; top:0; z-index:100; }
+        .nav-brand { display:flex; align-items:center; gap:1rem; text-decoration:none; }
+        .nav-logo { width:55px; height:55px; background:var(--red); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:800; font-size:.8rem; color:var(--gold); border:3px solid var(--gold); text-align:center; line-height:1.2; overflow:hidden; }
+        .nav-logo img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .nav-name strong { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--red); display:block; }
+        .nav-name span   { font-size:.7rem; color:var(--gray); letter-spacing:.5px; text-transform:uppercase; }
+        .nav-links { display:flex; align-items:center; gap:.2rem; }
+        .nav-links a { padding:.5rem .9rem; border-radius:5px; text-decoration:none; font-size:.85rem; font-weight:700; color:var(--dark); transition:background .15s; }
+        .nav-links a:hover { background:var(--red); color:white; }
+        .nav-links a.active { background:var(--red); color:white; }
+
+        /* ── HERO ── */
+        .careers-hero {
+            background:linear-gradient(135deg, var(--red) 0%, #5c0a0a 100%);
+            color:white; padding:4rem 2.5rem; text-align:center;
+        }
+        .careers-hero .label { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--gold-lt); margin-bottom:.75rem; }
+        .careers-hero h1 { font-family:'Playfair Display',serif; font-size:2.5rem; margin-bottom:1rem; }
+        .careers-hero p  { font-size:.95rem; opacity:.85; max-width:580px; margin:0 auto; line-height:1.7; }
+
+        /* ── LAYOUT ── */
+        .careers-wrap { max-width:1100px; margin:0 auto; padding:3rem 2.5rem; display:grid; grid-template-columns:1fr 420px; gap:2.5rem; align-items:start; }
+        @media(max-width:900px){ .careers-wrap { grid-template-columns:1fr; } }
+
+        /* ── JOB LIST ── */
+        .jobs-panel h2 { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--red); margin-bottom:1.5rem; }
+        .job-card { background:white; border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.07); overflow:hidden; border-left:5px solid var(--red); margin-bottom:1.25rem; cursor:pointer; transition:box-shadow .2s, border-color .2s; }
+        .job-card:hover, .job-card.selected { box-shadow:0 6px 20px rgba(139,0,0,0.15); border-left-color:var(--gold); }
+        .job-card-inner { padding:1.25rem 1.5rem; }
+        .job-card-title { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--dark); margin-bottom:.4rem; }
+        .job-tags { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:.65rem; }
+        .job-tag { background:#fdf2f2; color:var(--red); padding:.2rem .65rem; border-radius:20px; font-size:.72rem; font-weight:700; }
+        .job-tag.gold { background:#fdf8f0; color:#92400e; }
+        .job-tag.green { background:#f0fdf4; color:#166534; }
+        .job-desc { font-size:.82rem; color:var(--gray); line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+        .job-card-footer { padding:.75rem 1.5rem; background:#fafafa; border-top:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; }
+        .job-deadline { font-size:.75rem; color:var(--gray); }
+        .btn-apply { background:var(--red); color:white; border:none; padding:.5rem 1.25rem; border-radius:5px; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.3px; cursor:pointer; transition:background .15s; }
+        .btn-apply:hover { background:var(--red-lt); }
+        .no-jobs { background:white; border-radius:10px; padding:2.5rem; text-align:center; color:var(--gray); box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+
+        /* ── APPLICATION FORM ── */
+        .form-panel { position:sticky; top:90px; }
+        .form-card { background:white; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.1); overflow:hidden; }
+        .form-card-header { background:linear-gradient(135deg,var(--red),#5c0a0a); padding:1.5rem; color:white; }
+        .form-card-header h3 { font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:.25rem; }
+        .form-card-header p  { font-size:.8rem; opacity:.8; }
+        .form-selected-job { background:rgba(255,255,255,0.15); border-radius:6px; padding:.65rem 1rem; margin-top:.85rem; font-size:.82rem; font-weight:700; }
+        .form-body { padding:1.5rem; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-size:.78rem; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.4px; margin-bottom:.35rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width:100%; padding:.65rem .9rem; border:1.5px solid var(--border);
+            border-radius:7px; font-size:.9rem; font-family:'Lato',sans-serif;
+            transition:border-color .15s; box-sizing:border-box;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline:none; border-color:var(--red);
+        }
+        .form-group textarea { resize:vertical; min-height:85px; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+        .submit-btn {
+            width:100%; padding:.9rem; background:var(--red); color:white; border:none;
+            border-radius:7px; font-size:.95rem; font-weight:700; cursor:pointer;
+            text-transform:uppercase; letter-spacing:.5px; transition:background .15s;
+            margin-top:.5rem;
+        }
+        .submit-btn:hover { background:var(--red-lt); }
+        .submit-btn:disabled { background:#9ca3af; cursor:not-allowed; }
+
+        /* ── Success message ── */
+        .success-box { display:none; background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:2px solid #86efac; border-radius:10px; padding:2rem; text-align:center; }
+        .success-box .icon { font-size:3rem; margin-bottom:.75rem; }
+        .success-box h4 { color:#166534; font-size:1.1rem; margin-bottom:.5rem; }
+        .success-box p  { color:#166534; font-size:.85rem; line-height:1.6; }
+
+        /* ── Toast ── */
+        .toast { position:fixed; bottom:2rem; right:2rem; padding:1rem 1.5rem; border-radius:8px; color:white; font-weight:700; z-index:9999; display:none; font-size:.9rem; }
+        .toast.success { background:#10b981; }
+        .toast.error   { background:#ef4444; }
+
+        /* ── FOOTER ── */
+        .footer { background:var(--dark); color:rgba(255,255,255,0.7); text-align:center; padding:1.5rem; font-size:.8rem; }
+        .footer a { color:var(--gold-lt); text-decoration:none; }
+    </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <span class="topbar-left">Poblacion Ward II, Minglanilla, Cebu Philippines 6046</span>
+    <div style="display:flex;gap:1.5rem;">
+        <span>📞 <a href="tel:032-268-4746">(032) 268-4746</a></span>
+        <span>✉ <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a></span>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav>
+    <a href="index.html" class="nav-brand">
+        <div class="nav-logo">
+            <img src="images/logo.png" alt="SCC Logo" onerror="this.style.display='none';this.parentNode.innerHTML='SCC';">
+        </div>
+        <div class="nav-name">
+            <strong>Saint Cecilia College</strong>
+            <span>Minglanilla, Cebu</span>
+        </div>
+    </a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#enrollment">Admissions</a>
+        <a href="index.html#about">About Us</a>
+        <a href="careers.html" class="active">Careers</a>
+        <a href="login.html">Login</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="careers-hero">
+    <div class="label">Human Resources</div>
+    <h1>Career Opportunities</h1>
+    <p>Join our community of dedicated educators and staff. Explore our current openings and be part of shaping the future of our students.</p>
+</div>
+
+<!-- Main -->
+<div class="careers-wrap">
+
+    <!-- Left: Job listings -->
+    <div class="jobs-panel">
+        <h2>Open Positions</h2>
+        <div id="jobList">
+            <div class="no-jobs">Loading job openings...</div>
+        </div>
+    </div>
+
+    <!-- Right: Application form -->
+    <div class="form-panel">
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3>Apply Now</h3>
+                <p>Fill out the form below to submit your application.</p>
+                <div class="form-selected-job" id="selectedJobLabel">← Select a job to apply for</div>
+            </div>
+            <div class="form-body">
+
+                <!-- Success state -->
+                <div class="success-box" id="successBox">
+                    <div class="icon">🎉</div>
+                    <h4>Application Submitted!</h4>
+                    <p>Thank you for applying to Saint Cecilia College. We have received your application and will be in touch soon.</p>
+                    <button onclick="resetForm()" style="margin-top:1rem;background:var(--red);color:white;border:none;padding:.65rem 1.5rem;border-radius:6px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;">Apply for Another Position</button>
+                </div>
+
+                <!-- Form -->
+                <div id="appForm">
+                    <input type="hidden" id="selectedJobId" value="">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="fFirstName" placeholder="Juan">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="fLastName" placeholder="Dela Cruz">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="fEmail" placeholder="juan@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="text" id="fPhone" placeholder="09XX-XXX-XXXX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Home Address</label>
+                        <input type="text" id="fAddress" placeholder="Barangay, City, Province">
+                    </div>
+                    <div class="form-group">
+                        <label>Applying For *</label>
+                        <select id="fJobSelect" onchange="selectJobFromDropdown()">
+                            <option value="">-- Select a Position --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Qualifications & Experience</label>
+                        <textarea id="fResume" placeholder="Briefly describe your educational background, relevant experience, certifications, and why you are a good fit for this role..."></textarea>
+                    </div>
+
+                    <button class="submit-btn" onclick="submitApplication()" id="submitBtn">
+                        📨 Submit Application
+                    </button>
+                    <p style="font-size:.72rem;color:var(--gray);text-align:center;margin-top:.75rem;line-height:1.5;">By submitting, you agree to allow Saint Cecilia College to process your information for hiring purposes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>© 2025 Saint Cecilia College · Poblacion Ward II, Minglanilla, Cebu Philippines 6046</p>
+    <p style="margin-top:.4rem;"><a href="index.html">Home</a> · <a href="index.html#enrollment">Admissions</a> · <a href="login.html">Login</a></p>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+let allJobs     = [];
+let selectedJob = null;
+
+(async function init() {
+    await loadJobs();
+    // Auto-select job from URL param ?job=ID
+    const params = new URLSearchParams(window.location.search);
+    const jobId  = params.get('job');
+    if (jobId) selectJob(parseInt(jobId));
+})();
+
+async function loadJobs() {
+    try {
+        const res  = await fetch('php/api/public/get_open_jobs.php');
+        const data = await res.json();
+        allJobs = data.success ? data.jobs : [];
+    } catch(e) { allJobs = []; }
+    renderJobs();
+    populateDropdown();
+}
+
+function renderJobs() {
+    const container = document.getElementById('jobList');
+    if (!allJobs.length) {
+        container.innerHTML = '<div class="no-jobs"><div style="font-size:2rem;margin-bottom:.75rem;">🔍</div><p>No open positions at the moment. Please check back soon.</p></div>';
+        return;
+    }
+    container.innerHTML = allJobs.map(j => `
+    <div class="job-card ${selectedJob && selectedJob.id==j.id ? 'selected' : ''}" id="jcard-${j.id}" onclick="selectJob(${j.id})">
+        <div class="job-card-inner">
+            <div class="job-card-title">${esc(j.title)}</div>
+            <div class="job-tags">
+                <span class="job-tag">📁 ${esc(j.department_name||'General')}</span>
+                <span class="job-tag gold">⏱ ${esc((j.employment_type||'').replace('_',' '))}</span>
+                <span class="job-tag green">🪑 ${j.slots} slot${j.slots>1?'s':''}</span>
+            </div>
+            ${j.description ? `<div class="job-desc">${esc(j.description)}</div>` : ''}
+            ${j.requirements ? `<div style="margin-top:.5rem;font-size:.78rem;color:var(--gray);"><strong>Requirements:</strong> ${esc(j.requirements.substring(0,120))}${j.requirements.length>120?'...':''}</div>` : ''}
+        </div>
+        <div class="job-card-footer">
+            <span class="job-deadline">${j.deadline ? '📅 Deadline: '+j.deadline : 'Open until filled'}</span>
+            <button class="btn-apply" onclick="event.stopPropagation();selectJob(${j.id})">Apply →</button>
+        </div>
+    </div>`).join('');
+}
+
+function populateDropdown() {
+    const sel = document.getElementById('fJobSelect');
+    sel.innerHTML = '<option value="">-- Select a Position --</option>' +
+        allJobs.map(j => `<option value="${j.id}">${esc(j.title)}</option>`).join('');
+}
+
+function selectJob(id) {
+    selectedJob = allJobs.find(j => j.id == id);
+    if (!selectedJob) return;
+
+    // Highlight card
+    document.querySelectorAll('.job-card').forEach(c => c.classList.remove('selected'));
+    const card = document.getElementById(`jcard-${id}`);
+    if (card) { card.classList.add('selected'); card.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+
+    // Update form
+    document.getElementById('selectedJobId').value    = id;
+    document.getElementById('fJobSelect').value       = id;
+    document.getElementById('selectedJobLabel').textContent = `Applying for: ${selectedJob.title}`;
+
+    // Scroll to form on mobile
+    if (window.innerWidth < 900) {
+        document.querySelector('.form-panel').scrollIntoView({ behavior:'smooth' });
+    }
+}
+
+function selectJobFromDropdown() {
+    const id = document.getElementById('fJobSelect').value;
+    if (id) selectJob(parseInt(id));
+}
+
+async function submitApplication() {
+    const jobId     = document.getElementById('selectedJobId').value;
+    const firstName = document.getElementById('fFirstName').value.trim();
+    const lastName  = document.getElementById('fLastName').value.trim();
+    const email     = document.getElementById('fEmail').value.trim();
+    const phone     = document.getElementById('fPhone').value.trim();
+    const address   = document.getElementById('fAddress').value.trim();
+    const resume    = document.getElementById('fResume').value.trim();
+
+    if (!jobId)                  { showToast('Please select a position to apply for.', 'error'); return; }
+    if (!firstName || !lastName) { showToast('Please enter your full name.', 'error'); return; }
+    if (!email)                  { showToast('Please enter your email address.', 'error'); return; }
+    if (!phone)                  { showToast('Please enter your phone number.', 'error'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+        const res  = await fetch('php/api/public/submit_application.php', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({
+                job_id:       jobId,
+                full_name:    `${firstName} ${lastName}`,
+                email, phone, address,
+                resume_notes: resume
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('appForm').style.display   = 'none';
+            document.getElementById('successBox').style.display = 'block';
+        } else {
+            showToast('Error: ' + data.message, 'error');
+            btn.disabled = false;
+            btn.textContent = '📨 Submit Application';
+        }
+    } catch(e) {
+        showToast('Something went wrong. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = '📨 Submit Application';
+    }
+}
+
+function resetForm() {
+    document.getElementById('appForm').style.display    = 'block';
+    document.getElementById('successBox').style.display = 'none';
+    document.getElementById('submitBtn').disabled       = false;
+    document.getElementById('submitBtn').textContent    = '📨 Submit Application';
+    ['fFirstName','fLastName','fEmail','fPhone','fAddress','fResume'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('selectedJobId').value = '';
+    document.getElementById('fJobSelect').value    = '';
+    document.getElementById('selectedJobLabel').textContent = '← Select a job to apply for';
+    selectedJob = null;
+    document.querySelectorAll('.job-card').forEach(c => c.classList.remove('selected'));
+}
+
+function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type}`; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 4000);
+}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

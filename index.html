@@ -893,4 +893,51 @@
             });
         });
         document.querySelectorAll('.prog-card, .value-item, .step-item').forEach(el => observer.observe(el));
+
+    // ── Nav scroll-spy: highlight active link based on visible section ──
+    (function() {
+        const navLinks = document.querySelectorAll('.nav-links a:not(.nav-enroll)');
+
+        function setActive(href) {
+            navLinks.forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href') === href) {
+                    a.classList.add('active');
+                }
+            });
+        }
+
+        // Use IntersectionObserver to detect which section is in view
+        const sections = [
+            { id: 'about',      href: 'index.html#about' },
+            { id: 'enrollment', href: 'index.html#enrollment' },
+            { id: 'careers',    href: 'index.html#careers' },
+        ];
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const matched = sections.find(s => s.id === entry.target.id);
+                    if (matched) setActive(matched.href);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(s => {
+            const el = document.getElementById(s.id);
+            if (el) sectionObserver.observe(el);
+        });
+
+        // When scrolled back to top, highlight Home
+        window.addEventListener('scroll', () => {
+            if (window.scrollY < 100) setActive('index.html');
+        });
+
+        // On hash change (clicking nav links)
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if (!hash) setActive('index.html');
+            else setActive('index.html' + hash);
+        });
+    })();
     </script>

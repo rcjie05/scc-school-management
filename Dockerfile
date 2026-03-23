@@ -1,50 +1,40 @@
-# ─── SCC School Management System — Railway Dockerfile ───────────────────────
-FROM php:8.2-apache
+FROM ubuntu:22.04
 
-# Install required PHP extensions
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APACHE_RUN_USER=www-data
+ENV APACHE_RUN_GROUP=www-data
+ENV APACHE_LOG_DIR=/var/log/apache2
+
+# Install Apache + PHP clean with no conflicts
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        mysqli \
-        pdo \
-        pdo_mysql \
-        gd \
-        opcache \
+    apache2 \
+    php8.1 \
+    php8.1-mysqli \
+    php8.1-pdo \
+    php8.1-gd \
+    php8.1-mbstring \
+    php8.1-xml \
+    php8.1-curl \
+    php8.1-zip \
+    libapache2-mod-php8.1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix MPM conflict: remove ALL mpm symlinks, enable only prefork
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
-          /etc/apache2/mods-enabled/mpm_*.conf \
-    && ln -sf /etc/apache2/mods-available/mpm_prefork.load \
-              /etc/apache2/mods-enabled/mpm_prefork.load \
-    && ln -sf /etc/apache2/mods-available/mpm_prefork.conf \
-              /etc/apache2/mods-enabled/mpm_prefork.conf
+# Enable modules
+RUN a2enmod rewrite php8.1 headers
 
-# Enable Apache modules
-RUN a2enmod rewrite headers expires
-
-# Configure Apache
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Copy configs
+# Copy Apache config
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
-COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+RUN a2ensite 000-default
 
-# Set working directory and copy files
-WORKDIR /var/www/html
-COPY . .
+# Copy PHP ini
+COPY docker/php.ini /etc/php/8.1/apache2/conf.d/custom.ini
 
-# Permissions
-RUN mkdir -p uploads \
-    && chown -R www-data:www-data /var/www/html \
+# Copy project files
+COPY . /var/www/html/
+RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
+    && mkdir -p /var/www/html/uploads \
     && chmod -R 775 /var/www/html/uploads
 
 # Startup script

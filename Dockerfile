@@ -22,6 +22,10 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Fix MPM conflict - disable event, enable prefork
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork
+
 # Enable Apache modules
 RUN a2enmod rewrite headers expires deflate
 
@@ -46,9 +50,10 @@ RUN mkdir -p uploads \
 # Copy PHP ini settings
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 
-# Railway uses PORT env variable
-ENV PORT=80
+# Startup script that sets Apache port from Railway's $PORT env var
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+CMD ["/start.sh"]

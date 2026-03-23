@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/logo2.jpg">
+    <link rel="apple-touch-icon" href="images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1E3352">
@@ -9,7 +12,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
-    <link rel="apple-touch-icon" href="/images/logo.png">
     <title>St. Cecilia's College-Cebu, Inc. — Student Enrollment Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -38,74 +40,24 @@
         }
 
         /* ── TOPBAR ── */
-        .topbar {
-            background: var(--red);
-            color: white;
-            font-size: .75rem;
-            padding: .4rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: .5rem;
-        }
-        .topbar-left { opacity: .8; }
-        .topbar-right { display: flex; gap: 1.5rem; }
+        /* ── TOPBAR ── */
+        .topbar { background: var(--red); color: white; font-size: .73rem; padding: .35rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .4rem; border-bottom: 2px solid var(--gold); }
         .topbar a { color: var(--gold-lt); text-decoration: none; }
-        .topbar span { opacity: .85; }
+        .topbar-right { display: flex; gap: 1.5rem; }
+        .topbar-left { opacity: .8; }
 
         /* ── NAVBAR ── */
-        nav {
-            background: white;
-            border-bottom: 3px solid var(--red);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: .75rem 2.5rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-decoration: none;
-        }
-        .nav-logo {
-            width: 60px; height: 60px;
-            background: var(--red);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Playfair Display', serif;
-            font-weight: 800; font-size: .85rem;
-            color: var(--gold);
-            border: 3px solid var(--gold);
-            text-align: center; line-height: 1.2;
-        }
-        .nav-name strong {
-            display: block;
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem; color: var(--red); font-weight: 700;
-        }
-        .nav-name span { font-size: .72rem; color: var(--gray); }
-
-        .nav-links { display: flex; align-items: center; gap: .2rem; }
-        .nav-links a {
-            color: var(--dark); text-decoration: none;
-            font-size: .85rem; font-weight: 700;
-            padding: .5rem .9rem; border-radius: 4px;
-            text-transform: uppercase; letter-spacing: .5px;
-            transition: background .2s, color .2s;
-        }
+        .navbar, nav.navbar { background: white; border-bottom: 3px solid var(--red); display: flex; align-items: center; justify-content: space-between; padding: .6rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: .85rem; text-decoration: none; }
+        .nav-logo { width: 52px; height: 52px; border-radius: 50%; background: var(--red); border: 2.5px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 800; font-size: .78rem; color: var(--gold); text-align: center; line-height: 1.2; overflow: hidden; }
+        .nav-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .nav-name strong { display: block; font-family: 'Playfair Display', serif; font-size: .92rem; color: var(--red); font-weight: 700; }
+        .nav-name small, .nav-name span { font-size: .68rem; color: var(--gray); display: block; }
+        .nav-links { display: flex; gap: .15rem; align-items: center; }
+        .nav-links a { color: var(--dark); text-decoration: none; font-size: .8rem; font-weight: 700; padding: .45rem .8rem; border-radius: 4px; text-transform: uppercase; letter-spacing: .4px; transition: background .2s, color .2s; }
         .nav-links a:hover { background: var(--red); color: white; }
         .nav-links a.active { background: var(--red); color: white; }
-        .nav-enroll {
-            background: var(--gold); color: var(--dark) !important;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(200,169,81,0.3);
-        }
+        .nav-enroll { background: var(--gold) !important; color: var(--dark) !important; }
         .nav-enroll:hover { background: var(--gold-lt) !important; color: var(--dark) !important; }
 
         /* ── HERO SLIDER ── */
@@ -508,9 +460,9 @@
 </div>
 
 <!-- NAVBAR -->
-<nav>
+<nav class="navbar">
     <a href="index.html" class="nav-brand">
-        <div class="nav-logo">SCC<br>CI</div>
+        <div class="nav-logo"><img src="images/logo2.jpg" alt="SCC Logo"></div>
         <div class="nav-name">
             <strong>St. Cecilia's College-Cebu, Inc.</strong>
             <span>Poblacion Ward II, Minglanilla, Cebu — Est. 1999</span>

@@ -1,6 +1,7 @@
 <?php
 // Database configuration
 // Supports Railway.app env variables and XAMPP local fallback
+define('GROQ_API_KEY', getenv('GROQ_API_KEY') ?: '');
 define('DB_HOST', getenv('MYSQLHOST')     ?: getenv('DB_HOST') ?: 'localhost');
 define('DB_PORT', getenv('MYSQLPORT')     ?: getenv('DB_PORT') ?: '3306');
 define('DB_USER', getenv('MYSQLUSER')     ?: getenv('DB_USER') ?: 'root');

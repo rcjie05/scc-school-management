@@ -24,6 +24,9 @@ $initials   = strtoupper(substr($user['name'] ?? 'A', 0, 1));
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1E3352">
@@ -31,7 +34,7 @@ $initials   = strtoupper(substr($user['name'] ?? 'A', 0, 1));
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
-    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>Account Settings - Admin Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/themes.css">
@@ -48,7 +51,9 @@ $initials   = strtoupper(substr($user['name'] ?? 'A', 0, 1));
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -305,5 +310,6 @@ $initials   = strtoupper(substr($user['name'] ?? 'A', 0, 1));
   <a href="sections.php" class="mobile-nav-item "><span class="mobile-nav-icon">📁</span>Sections</a>
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

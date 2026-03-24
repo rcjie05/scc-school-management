@@ -9,6 +9,9 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Load - Saint Cecilia College</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -81,7 +84,28 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
             transition: all .2s;
         }
         .drop-btn:hover { background: var(--secondary-pink); color: var(--text-white); }
-        .pending-badge { font-size: .72rem; color: var(--text-primary); background: rgba(212,169,106,0.2); padding: .15rem .5rem; border-radius: 10px; font-weight: 600; }
+        .pending-badge {
+            display: inline-flex; align-items: center; gap: .35rem;
+            font-size: .72rem; font-weight: 700;
+            color: #92400e;
+            background: #fef3c7;
+            border: 1.5px solid #fbbf24;
+            padding: .25rem .65rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .pending-badge::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #f59e0b;
+            display: inline-block;
+            animation: pendingPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pendingPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: .4; transform: scale(.7); }
+        }
 
         /* Add subject card */
         .add-subject-card {
@@ -132,6 +156,26 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
         .req-row { padding:.75rem 1rem; border-radius:var(--radius-md); background:var(--background-main); margin-bottom:.5rem; }
         .req-row-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:.3rem; }
         .req-note { font-size:.8rem; color:var(--text-secondary); margin-top:.25rem; padding:.35rem .6rem; background:var(--background-main); border-radius:var(--radius-sm); }
+        /* Toast notification */
+        #scc-toast {
+            position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;
+            display: flex; align-items: flex-start; gap: .85rem;
+            background: var(--background-card); border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15); padding: 1rem 1.25rem;
+            max-width: 360px; min-width: 260px;
+            transform: translateX(120%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+            border-left: 4px solid var(--primary-purple);
+        }
+        #scc-toast.show { transform: translateX(0); }
+        #scc-toast.toast-success { border-left-color: #22c55e; }
+        #scc-toast.toast-error   { border-left-color: #ef4444; }
+        #scc-toast.toast-warning { border-left-color: #f59e0b; }
+        .toast-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: .05rem; }
+        .toast-body { flex: 1; }
+        .toast-title { font-weight: 700; font-size: .92rem; color: var(--text-primary); margin-bottom: .15rem; }
+        .toast-msg   { font-size: .83rem; color: var(--text-secondary); line-height: 1.45; }
+        .toast-close { background: none; border: none; font-size: 1.1rem; color: var(--text-secondary); cursor: pointer; padding: 0; flex-shrink: 0; }
+        .toast-close:hover { color: var(--text-primary); }
     </style>
         </head>
 <body>
@@ -139,7 +183,9 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -260,6 +306,16 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
 </div>
 
 <!-- Reason Modal -->
+<!-- Toast Notification -->
+<div id="scc-toast">
+    <div class="toast-icon" id="toast-icon">ℹ️</div>
+    <div class="toast-body">
+        <div class="toast-title" id="toast-title">Notice</div>
+        <div class="toast-msg"   id="toast-msg"></div>
+    </div>
+    <button class="toast-close" onclick="hideToast()">✕</button>
+</div>
+
 <div class="modal" id="reasonModal">
     <div class="modal-content">
         <div class="modal-title" id="modalTitle">Submit Request</div>
@@ -333,10 +389,10 @@ async function loadStudyLoad() {
         }
 
         document.getElementById('subjectsTable').innerHTML = data.subjects.map(s => {
-            const hasPending = pendingSubjectIds.has(parseInt(s.subject_id));
+            const hasPending = pendingSubjectIds.has(String(s.subject_id));
             const actionCell = hasPending
-                ? `<span class="pending-badge">⏳ Drop Pending</span>`
-                : `<button class="drop-btn" onclick="openModal(${s.subject_id},'drop','${esc(s.subject_code)}','${esc(s.subject_name)}')">Drop</button>`;
+                ? `<span class="pending-badge">Drop Pending</span>`
+                : `<button class="drop-btn" data-subject-id="${s.subject_id}" onclick="openModal(${s.subject_id},'drop','${esc(s.subject_code)}','${esc(s.subject_name)}')">Drop</button>`;
             return `
             <tr>
                 <td><strong>${s.subject_code}</strong></td>
@@ -362,13 +418,16 @@ async function loadPendingDropIds() {
         data.requests.forEach(r => {
             if (r.status === 'pending') {
                 pendingCount++;
-                if (r.request_type === 'drop') pendingSubjectIds.add(parseInt(r.subject_id ?? 0));
+                // Store as both string and int to avoid type mismatch
+                if (r.request_type === 'drop' && r.subject_id != null) {
+                    pendingSubjectIds.add(String(r.subject_id));
+                }
             }
         });
         const badge = document.getElementById('pendingBadge');
         if (pendingCount > 0) { badge.style.display = ''; badge.textContent = pendingCount; }
         else badge.style.display = 'none';
-    } catch(e) {}
+    } catch(e) { console.error('loadPendingDropIds error:', e); }
 }
 
 // ── Load Available Subjects ────────────────────────────
@@ -456,7 +515,7 @@ function closeModal() {
 async function submitRequest() {
     if (!pendingRequest) return;
     const reason = document.getElementById('reasonInput').value.trim();
-    if (!reason) { alert('Please enter a reason.'); return; }
+    if (!reason) { showToast('Please enter a reason before submitting.', 'warning'); return; }
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
@@ -469,20 +528,49 @@ async function submitRequest() {
             body: JSON.stringify({ subject_id: pendingRequest.subject_id, request_type: pendingRequest.request_type, reason })
         });
         const data = await res.json();
-        alert(data.message);
+        showToast(data.message, data.success ? 'success' : 'error');
         if (data.success) {
+            // Instantly swap the Drop button to pending badge without reload
+            const subjectId = pendingRequest.subject_id;
+            if (pendingRequest.request_type === 'drop') {
+                const dropBtn = document.querySelector(`.drop-btn[data-subject-id="${subjectId}"]`);
+                if (dropBtn) {
+                    const badge = document.createElement('span');
+                    badge.className = 'pending-badge';
+                    badge.textContent = 'Drop Pending';
+                    dropBtn.replaceWith(badge);
+                }
+                pendingSubjectIds.add(String(subjectId));
+            }
             closeModal();
-            loadStudyLoad();
             loadAvailable();
+            // Update the pending count badge on the tab
+            await loadPendingDropIds();
         }
     } catch(e) {
-        alert('Failed to submit request. Please try again.');
+        showToast('Failed to submit request. Please try again.', 'error');
     } finally {
         btn.disabled = false;
     }
 }
 
 function esc(str) { return (str || '').replace(/'/g, "\'").replace(/"/g, '&quot;'); }
+
+let _toastTimer;
+function showToast(msg, type = 'info') {
+    const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    const titles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Notice' };
+    const el = document.getElementById('scc-toast');
+    document.getElementById('toast-icon').textContent  = icons[type]  || icons.info;
+    document.getElementById('toast-title').textContent = titles[type] || titles.info;
+    document.getElementById('toast-msg').textContent   = msg;
+    el.className = `show toast-${type}`;
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(hideToast, 4500);
+}
+function hideToast() {
+    document.getElementById('scc-toast').classList.remove('show');
+}
 
 // Close modal on backdrop click
 document.getElementById('reasonModal').addEventListener('click', function(e) {
@@ -494,8 +582,18 @@ loadStudyLoad();
     <script>
         (function() {
             var sidebar = document.querySelector('.sidebar');
-            var saved = sessionStorage.getItem('sidebarScroll');
-            if (saved) sidebar.scrollTop = parseInt(saved);
+            var activeItem = sidebar.querySelector('.nav-item.active');
+            if (activeItem) {
+                // Scroll only within the sidebar, not the whole page
+                const itemTop = activeItem.offsetTop;
+                const sidebarHeight = sidebar.clientHeight;
+                const itemHeight = activeItem.clientHeight;
+                sidebar.scrollTop = itemTop - (sidebarHeight / 2) + (itemHeight / 2);
+            } else {
+                var saved = sessionStorage.getItem('sidebarScroll');
+                if (saved) sidebar.scrollTop = parseInt(saved);
+            }
+            // Save scroll position before navigating away
             document.querySelectorAll('.nav-item').forEach(function(link) {
                 link.addEventListener('click', function() {
                     sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
@@ -536,5 +634,6 @@ loadStudyLoad();
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

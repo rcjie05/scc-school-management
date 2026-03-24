@@ -49,6 +49,9 @@ $full_name = $student['name'] ?? '';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Re-Enrollment Form — Student Portal</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -835,5 +838,6 @@ async function submitReenrollment() {
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

@@ -24,6 +24,9 @@ $initials  = strtoupper(substr($user['name'] ?? 'R', 0, 1));
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Saint Cecilia College Portal</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -41,7 +44,9 @@ $initials  = strtoupper(substr($user['name'] ?? 'R', 0, 1));
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-icon">SCC</div>
+            <div class="logo-icon">
+                <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+            </div>
             <div class="logo-text">
                 Saint Cecilia College
                 <span>Saint Cecilia College</span>
@@ -261,5 +266,6 @@ async function changePassword(e) {
     });
 })();
 </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

@@ -6,6 +6,9 @@ requireRole('hr');
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1E3352">
@@ -13,7 +16,7 @@ requireRole('hr');
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
-    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>HR Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/themes.css">
@@ -44,7 +47,9 @@ requireRole('hr');
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -156,8 +161,9 @@ loadDashboard();
 <script>
 (function() {
     var sidebar = document.querySelector('.sidebar');
-    var saved = sessionStorage.getItem('sidebarScroll');
-    if (saved) sidebar.scrollTop = parseInt(saved);
+    // Always reset scroll to top on dashboard (entry point after login)
+    sessionStorage.removeItem('sidebarScroll');
+    sidebar.scrollTop = 0;
     document.querySelectorAll('.nav-item').forEach(function(link) {
         link.addEventListener('click', function() { sessionStorage.setItem('sidebarScroll', sidebar.scrollTop); });
     });
@@ -205,5 +211,6 @@ loadDashboard();
   <a href="attendance.php" class="mobile-nav-item "><span class="mobile-nav-icon">🕐</span>Attendance</a>
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

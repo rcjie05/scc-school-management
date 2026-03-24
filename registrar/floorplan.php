@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../php/config.php';
 requireLogin();
 
@@ -16,6 +15,9 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Map - Registrar</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -23,6 +25,7 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/floor-styles.css">
     <style>
+        body { background: var(--background-main) !important; padding: 0 !important; }
         .page-wrapper {
             display: flex;
             min-height: 100vh;
@@ -189,7 +192,9 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -280,9 +285,6 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
 
                         <!-- Routes Panel - RIGHT SIDE -->
                         <div class="saved-routes" id="registrarRouteSelector">
-                            <div class="instruction" style="margin-bottom: 20px;">
-                                💡 <strong>Tip:</strong> Select a route from the list to view navigation on the map!
-                            </div>
                             
                             <div class="control-section">
                                 <h3>📚 Available Routes</h3>
@@ -356,6 +358,7 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
             var sidebar = document.querySelector('.sidebar');
             var saved = sessionStorage.getItem('sidebarScroll');
             if (saved) sidebar.scrollTop = parseInt(saved);
+            // Save scroll position before navigating away
             document.querySelectorAll('.nav-item').forEach(function(link) {
                 link.addEventListener('click', function() {
                     sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
@@ -395,5 +398,6 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

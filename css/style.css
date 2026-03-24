@@ -94,15 +94,14 @@ body {
 .logo-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #B85C5C, #3D6B9F);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: white;
-    box-shadow: 0 4px 12px rgba(184, 92, 92, 0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    background: white;
 }
 
 .logo-text {

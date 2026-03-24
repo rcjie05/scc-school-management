@@ -7,7 +7,7 @@ $conn    = getDBConnection();
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
-    SELECT adr.id, adr.request_type, adr.reason, adr.status, adr.registrar_note,
+    SELECT adr.id, adr.subject_id, adr.request_type, adr.reason, adr.status, adr.registrar_note,
            adr.created_at, adr.reviewed_at,
            s.subject_code, s.subject_name, s.units,
            u.name AS reviewed_by_name

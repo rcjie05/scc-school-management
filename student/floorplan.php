@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../php/config.php';
 requireLogin();
 if ($_SESSION['role'] !== 'student') { header('Location: ../php/logout.php'); exit(); }
@@ -9,6 +8,9 @@ $fullName = $_SESSION['name'] ?? 'Student';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Map - Student</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -16,6 +18,7 @@ $fullName = $_SESSION['name'] ?? 'Student';
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/floor-styles.css">
     <style>
+        body { background: var(--background-main) !important; padding: 0 !important; }
         .main-content { flex: 1; padding: 0; background: var(--background-main); }
         .floor-container { padding: 20px; max-width: 100%; }
         .floor-header { background: var(--background-card); padding: 20px 30px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
@@ -110,7 +113,9 @@ $fullName = $_SESSION['name'] ?? 'Student';
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -184,9 +189,6 @@ $fullName = $_SESSION['name'] ?? 'Student';
 
                     <!-- Routes Panel (RIGHT) -->
                     <div class="saved-routes" id="studentRouteSelector">
-                        <div class="instruction" style="margin-bottom: 20px;">
-                            💡 <strong>Tip:</strong> Select a route from the list to view navigation on the map!
-                        </div>
                         <div class="control-section">
                             <h3>📚 Available Routes</h3>
                             <input type="text" class="input-field" id="studentRouteSearch"
@@ -347,5 +349,6 @@ function findRoomOnMap(roomName) {
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

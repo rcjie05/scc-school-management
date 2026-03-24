@@ -8,6 +8,9 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1E3352">
@@ -15,13 +18,14 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
-    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>Campus Map - Saint Cecilia College Portal</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/themes.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/floor-styles.css">
     <style>
+        body { background: var(--background-main) !important; padding: 0 !important; }
         .page-wrapper { display: flex; min-height: 100vh; }
         .main-content { flex: 1; padding: 0; background: #f5f5f5; }
         .floor-container { padding: 20px; max-width: 100%; }
@@ -82,7 +86,9 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -147,9 +153,6 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
 
                     <!-- Routes Panel Right -->
                     <div class="saved-routes" id="hrRouteSelector">
-                        <div class="instruction" style="margin-bottom: 20px;">
-                            💡 <strong>Tip:</strong> Select a route from the list to view navigation on the map!
-                        </div>
                         <div class="control-section">
                             <h3>📚 Available Routes</h3>
                             <input
@@ -248,5 +251,6 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
   <a href="attendance.php" class="mobile-nav-item "><span class="mobile-nav-icon">🕐</span>Attendance</a>
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

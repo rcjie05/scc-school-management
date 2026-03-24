@@ -126,5 +126,6 @@ run();
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

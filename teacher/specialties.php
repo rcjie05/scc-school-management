@@ -8,6 +8,9 @@ $teacher_id = $_SESSION['user_id'];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
+    <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Specialties - Teacher Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
@@ -86,7 +89,9 @@ $teacher_id = $_SESSION['user_id'];
                 <div class="sidebar-overlay" id="sidebarOverlay"></div>
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <div class="logo-icon">SCC</div>
+                <div class="logo-icon">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                </div>
                 <div class="logo-text">
                     Saint Cecilia College
                     <span>Saint Cecilia College</span>
@@ -242,6 +247,7 @@ $teacher_id = $_SESSION['user_id'];
             var sidebar = document.querySelector('.sidebar');
             var saved = sessionStorage.getItem('sidebarScroll');
             if (saved) sidebar.scrollTop = parseInt(saved);
+            // Save scroll position before navigating away
             document.querySelectorAll('.nav-item').forEach(function(link) {
                 link.addEventListener('click', function() {
                     sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
@@ -281,5 +287,6 @@ $teacher_id = $_SESSION['user_id'];
         });
     })();
     </script>
+    <script src="/js/session-monitor.js"></script>
 </body>
 </html>

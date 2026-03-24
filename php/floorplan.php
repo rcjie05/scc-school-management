@@ -1,8 +1,5 @@
 <?php
-// Start session first
-session_start();
-
-// Include config which has session functions
+// Include config which handles session
 require_once 'config.php';
 
 // Ensure user is logged in
@@ -200,9 +197,6 @@ $canView = in_array($userRole, ['admin', 'student', 'teacher', 'registrar', 'hr'
 
             <!-- Right Public Routes (non-admin) -->
             <div class="saved-routes" id="studentRouteSelector" <?php echo $canEdit ? 'style="display: none;"' : ''; ?>>
-                <div class="instruction" style="margin-bottom: 20px;">
-                    💡 <strong>Tip:</strong> Select a route from the list to view navigation on the map!
-                </div>
                 
                 <div class="control-section">
                     <h3>📚 Available Routes</h3>

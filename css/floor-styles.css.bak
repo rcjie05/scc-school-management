@@ -5,9 +5,9 @@
 }
 
 :root {
-    --primary: #3FA9F5;
-    --primary-dark: #122D70;
-    --secondary: #5C58ED;
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --secondary: #8b5cf6;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
@@ -30,7 +30,7 @@
 
 body {
     font-family: 'Lexend', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(180deg, #1E3352 0%, #122D70 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     padding: 20px;
     line-height: 1.6;

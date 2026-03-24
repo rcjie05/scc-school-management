@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 
+// Log the logout before destroying session
 if (isLoggedIn()) {
     $conn = getDBConnection();
     if ($conn) {
@@ -9,7 +10,10 @@ if (isLoggedIn()) {
     }
 }
 
-session_destroy();
-header('Location: ../login.html');
+// Destroy session completely
+destroySession();
+
+// Redirect to login
+header('Location: ' . BASE_URL . '/login.html');
 exit();
 ?>

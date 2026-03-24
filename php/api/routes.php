@@ -7,7 +7,6 @@
 header('Content-Type: application/json');
 
 // Start session and include dependencies
-session_start();
 require_once __DIR__ . '/../config.php';
 
 // Ensure user is logged in

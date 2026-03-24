@@ -142,6 +142,98 @@
         .step-dot.done { background:var(--gold); }
         .step-dot.active { background:var(--red); }
 
+        /* ── Loading Screen ── */
+        #loading-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--red);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            animation: fadeInLoad 0.3s ease;
+        }
+        #loading-screen.show { display: flex; }
+        @keyframes fadeInLoad {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .loading-logo {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid var(--gold);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .loading-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1);   box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+            50%       { transform: scale(1.06); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+        }
+        .loading-school-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .loading-school-name small {
+            display: block;
+            font-family: 'Lato', sans-serif;
+            font-size: .72rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+            letter-spacing: .5px;
+            margin-top: .2rem;
+        }
+        .loading-bar-wrap {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--gold);
+            border-radius: 2px;
+            animation: loadBar 1.4s ease-in-out forwards;
+        }
+        @keyframes loadBar {
+            0%   { width: 0%; }
+            40%  { width: 60%; }
+            80%  { width: 85%; }
+            100% { width: 100%; }
+        }
+        .loading-text {
+            font-size: .8rem;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: .5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .loading-dots span {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            margin: 0 3px;
+            animation: dotBounce 1.2s ease-in-out infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: .2s; }
+        .loading-dots span:nth-child(3) { animation-delay: .4s; }
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0); opacity: .4; }
+            50%       { transform: translateY(-6px); opacity: 1; }
+        }
+
         @media (max-width:900px) {
             .hero-side { display:none; }
             .login-side { width:100%; }
@@ -152,6 +244,24 @@
     </style>
 </head>
 <body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+    <div class="loading-logo">
+        <img src="images/logo.png" alt="SCC Logo" onerror="this.parentNode.innerHTML='SCC'">
+    </div>
+    <div class="loading-school-name">
+        St. Cecilia's College-Cebu, Inc.
+        <small>Student Portal</small>
+    </div>
+    <div class="loading-bar-wrap">
+        <div class="loading-bar" id="loadingBar"></div>
+    </div>
+    <div class="loading-text">Logging you in</div>
+    <div class="loading-dots">
+        <span></span><span></span><span></span>
+    </div>
+</div>
 
 <div class="topbar">
     <div class="topbar-left"><span>#AllevoSCC — Challenges Minds · Moves Hearts · Changes Lives</span></div>
@@ -294,7 +404,15 @@
             const result = await response.json();
             if (result.success) {
                 alertContainer.innerHTML = '<div class="alert alert-success">✓ Login successful! Redirecting...</div>';
-                setTimeout(() => { window.location.href = result.redirect; }, 1000);
+                // Show loading screen
+                const ls = document.getElementById('loading-screen');
+                ls.classList.add('show');
+                // Reset and restart the loading bar animation
+                const bar = document.getElementById('loadingBar');
+                bar.style.animation = 'none';
+                bar.offsetHeight; // reflow
+                bar.style.animation = '';
+                setTimeout(() => { window.location.href = result.redirect; }, 1800);
             } else {
                 alertContainer.innerHTML = `<div class="alert alert-error">⚠️ ${result.message}</div>`;
                 btn.textContent = 'Login to Portal';
@@ -647,5 +765,27 @@
 </script>
 
 <script src="/js/pwa.js"></script>
+
+<script>
+// Show session/error messages from URL params
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    const error  = params.get('error');
+    const msgs   = {
+        'session_expired': '⏱️ Your session has expired. Please log in again.',
+        'deactivated':     '🚫 Your account has been deactivated.',
+        'unauthorized':    '🔒 You do not have permission to access that page.',
+    };
+    if (error && msgs[error]) {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;font-weight:600;text-align:center;';
+        div.textContent = msgs[error];
+        const form = document.querySelector('.login-form, form, .login-box');
+        if (form) form.prepend(div);
+        else document.body.prepend(div);
+    }
+})();
+</script>
+
 </body>
 </html>

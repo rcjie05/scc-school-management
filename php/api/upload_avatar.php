@@ -11,7 +11,7 @@ $user_id = $_SESSION['user_id'];
 $conn    = getDBConnection();
 
 // Ensure avatar_url column exists
-$conn->query("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `avatar_url` VARCHAR(500) NULL DEFAULT NULL");
+// avatar_url column already exists in users table schema
 
 if (!isset($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
     $errCode = isset($_FILES['avatar']) ? $_FILES['avatar']['error'] : 'none';

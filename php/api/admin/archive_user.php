@@ -7,7 +7,11 @@ $conn = getDBConnection();
 $admin_id = $_SESSION['user_id'];
 
 // Ensure archived_at column exists
-$conn->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS archived_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'archived_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE users ADD COLUMN archived_at DATETIME DEFAULT NULL");
+}
 
 $input = json_decode(file_get_contents('php://input'), true);
 

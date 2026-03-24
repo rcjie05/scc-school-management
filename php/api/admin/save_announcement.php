@@ -43,7 +43,11 @@ $conn->query("
 ");
 
 // Ensure soft-delete column exists
-$conn->query("ALTER TABLE announcements ADD COLUMN IF NOT EXISTS deleted_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'announcements' AND COLUMN_NAME = 'deleted_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE announcements ADD COLUMN deleted_at DATETIME DEFAULT NULL");
+}
 
 // --- Handle uploaded files ---
 $uploadedFiles = [];

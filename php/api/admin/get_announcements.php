@@ -9,7 +9,11 @@ $target = isset($_GET['target']) ? $_GET['target'] : null;
 $limit  = isset($_GET['limit'])  ? intval($_GET['limit']) : 50;
 
 // Ensure columns/tables exist
-$conn->query("ALTER TABLE announcements ADD COLUMN IF NOT EXISTS deleted_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'announcements' AND COLUMN_NAME = 'deleted_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE announcements ADD COLUMN deleted_at DATETIME DEFAULT NULL");
+}
 $conn->query("
     CREATE TABLE IF NOT EXISTS announcement_attachments (
         id INT AUTO_INCREMENT PRIMARY KEY,

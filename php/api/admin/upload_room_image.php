@@ -75,7 +75,11 @@ if (!move_uploaded_file($file['tmp_name'], $savePath)) {
 $relative = 'uploads/rooms/' . $filename;
 
 // Ensure column exists
-$conn->query("ALTER TABLE rooms ADD COLUMN IF NOT EXISTS image_url VARCHAR(500) DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'rooms' AND COLUMN_NAME = 'image_url'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE rooms ADD COLUMN image_url VARCHAR(500) DEFAULT NULL");
+}
 
 $stmt = $conn->prepare("UPDATE rooms SET image_url = ? WHERE id = ?");
 $stmt->bind_param("si", $relative, $room_id);

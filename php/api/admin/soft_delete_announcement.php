@@ -7,7 +7,11 @@ $conn     = getDBConnection();
 $admin_id = $_SESSION['user_id'];
 
 // Auto-add deleted_at column if missing
-$conn->query("ALTER TABLE announcements ADD COLUMN IF NOT EXISTS deleted_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'announcements' AND COLUMN_NAME = 'deleted_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE announcements ADD COLUMN deleted_at DATETIME DEFAULT NULL");
+}
 
 $input = json_decode(file_get_contents('php://input'), true);
 $id    = intval($input['announcement_id'] ?? 0);

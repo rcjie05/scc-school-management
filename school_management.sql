@@ -609,7 +609,9 @@ CREATE TABLE `rooms` (
   `room_type` varchar(100) DEFAULT NULL,
   `accessibility_features` text DEFAULT NULL,
   `coordinates_x` decimal(10,6) DEFAULT NULL,
-  `coordinates_y` decimal(10,6) DEFAULT NULL
+  `coordinates_y` decimal(10,6) DEFAULT NULL,
+  `purpose` text DEFAULT NULL,
+  `image_url` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --

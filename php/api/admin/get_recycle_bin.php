@@ -6,8 +6,16 @@ requireRole('admin');
 $conn = getDBConnection();
 
 // Auto-add deleted_at columns where missing
-$conn->query("ALTER TABLE announcements ADD COLUMN IF NOT EXISTS deleted_at DATETIME DEFAULT NULL");
-$conn->query("ALTER TABLE grade_submissions ADD COLUMN IF NOT EXISTS deleted_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'announcements' AND COLUMN_NAME = 'deleted_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE announcements ADD COLUMN deleted_at DATETIME DEFAULT NULL");
+}
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'grade_submissions' AND COLUMN_NAME = 'deleted_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE grade_submissions ADD COLUMN deleted_at DATETIME DEFAULT NULL");
+}
 
 $items = [];
 

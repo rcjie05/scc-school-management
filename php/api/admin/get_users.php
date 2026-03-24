@@ -17,7 +17,11 @@ if (!$conn) {
 }
 
 // Ensure archived_at column exists (safe migration)
-$conn->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS archived_at DATETIME DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'archived_at'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE users ADD COLUMN archived_at DATETIME DEFAULT NULL");
+}
 
 $role   = isset($_GET['role'])   ? $_GET['role']   : null;
 $status = isset($_GET['status']) ? $_GET['status'] : null;

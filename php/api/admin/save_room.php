@@ -21,7 +21,15 @@ $height      = (isset($input['height'])  && $input['height']  !== '') ? intval($
 $purpose     = isset($input['purpose'])  ? trim($input['purpose'])  : null;
 
 // Ensure purpose and image_url columns exist
-$conn->query("ALTER TABLE rooms ADD COLUMN IF NOT EXISTS purpose TEXT DEFAULT NULL, ADD COLUMN IF NOT EXISTS image_url VARCHAR(500) DEFAULT NULL");
+// Safe column migration
+$_col_check = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'rooms' AND COLUMN_NAME = 'purpose'");
+if ($_col_check && $_col_check->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE rooms ADD COLUMN purpose TEXT DEFAULT NULL");
+}
+$_col_check2 = $conn->query("SELECT COUNT(*) as cnt FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'rooms' AND COLUMN_NAME = 'image_url'");
+if ($_col_check2 && $_col_check2->fetch_assoc()['cnt'] == 0) {
+    $conn->query("ALTER TABLE rooms ADD COLUMN image_url VARCHAR(500) DEFAULT NULL");
+}
 
 if (!$building_id || !$room_number) {
     echo json_encode(['success' => false, 'message' => 'Building and room name are required']);

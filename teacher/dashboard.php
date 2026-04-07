@@ -305,6 +305,13 @@ $_initials   = strtoupper(substr($_avatar_user['name'] ?? '?', 0, 1));
         });
     })();
     </script>
-    <script src="/js/session-monitor.js"></script>
+<nav class="mobile-bottom-nav">
+  <a href="dashboard.php" class="mobile-nav-item active"><span class="mobile-nav-icon">🏠</span>Home</a>
+  <a href="classes.php" class="mobile-nav-item"><span class="mobile-nav-icon">📚</span>Classes</a>
+  <a href="schedule.php" class="mobile-nav-item"><span class="mobile-nav-icon">📅</span>Schedule</a>
+  <a href="announcements.php" class="mobile-nav-item"><span class="mobile-nav-icon">📢</span>News</a>
+  <a href="profile.php" class="mobile-nav-item"><span class="mobile-nav-icon">👤</span>Profile</a>
+</nav>
+    <script src="../js/session-monitor.js"></script>
 </body>
 </html>

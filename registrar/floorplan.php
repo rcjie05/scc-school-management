@@ -398,6 +398,13 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
         });
     })();
     </script>
-    <script src="/js/session-monitor.js"></script>
+<nav class="mobile-bottom-nav">
+  <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span>Home</a>
+  <a href="applications.php" class="mobile-nav-item"><span class="mobile-nav-icon">📋</span>Apps</a>
+  <a href="manage_loads.php" class="mobile-nav-item"><span class="mobile-nav-icon">📚</span>Loads</a>
+  <a href="grades.php" class="mobile-nav-item"><span class="mobile-nav-icon">🎓</span>Grades</a>
+  <a href="reports.php" class="mobile-nav-item"><span class="mobile-nav-icon">📈</span>Reports</a>
+</nav>
+    <script src="../js/session-monitor.js"></script>
 </body>
 </html>

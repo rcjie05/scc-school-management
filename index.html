@@ -424,6 +424,68 @@
         .footer-bottom a { color: var(--gold-lt); text-decoration: none; font-size: .75rem; }
 
         /* ── RESPONSIVE ── */
+
+        /* ── Hamburger / mobile nav ── */
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 38px;
+            height: 38px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: background .2s;
+        }
+        .nav-hamburger:hover { background: rgba(139,0,0,.08); }
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--red);
+            border-radius: 2px;
+            transition: transform .3s, opacity .3s;
+        }
+        .nav-hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+        .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+        .nav-mobile-drawer {
+            display: none;
+            flex-direction: column;
+            background: white;
+            border-bottom: 3px solid var(--red);
+            box-shadow: 0 4px 12px rgba(0,0,0,.1);
+            padding: .5rem 1rem .75rem;
+            position: sticky;
+            top: 65px;
+            z-index: 99;
+        }
+        .nav-mobile-drawer.open { display: flex; }
+        .nav-mobile-drawer a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 700;
+            padding: .6rem .75rem;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            transition: background .2s, color .2s;
+        }
+        .nav-mobile-drawer a:hover,
+        .nav-mobile-drawer a.active { background: var(--red); color: white; }
+        .nav-mobile-drawer .nav-enroll {
+            background: var(--gold) !important;
+            color: var(--dark) !important;
+            margin-top: .25rem;
+        }
+        @media (max-width: 900px) {
+            .nav-hamburger { display: flex; }
+        }
         @media (max-width: 900px) {
             nav { padding: .6rem 1rem; }
             .nav-links { display: none; }
@@ -474,7 +536,18 @@
         <a href="login.html">Login</a>
         <a href="enrollment.html" class="nav-enroll">Enroll Now</a>
     </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="nav-mobile-drawer" id="navMobileDrawer">
+    <a href="index.html" class="active">Home</a>
+    <a href="index.html#about">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="enrollment.html" class="nav-enroll">Enroll Now</a>
+</div>
 
 <!-- HERO SLIDER -->
 <div class="hero">
@@ -767,4 +840,22 @@
             else setActive('index.html' + hash);
         });
     })();
+
+    // Mobile nav toggle
+    const hamburger = document.getElementById('navHamburger');
+    const drawer = document.getElementById('navMobileDrawer');
+    if (hamburger && drawer) {
+        hamburger.addEventListener('click', () => {
+            const open = drawer.classList.toggle('open');
+            hamburger.classList.toggle('open', open);
+            hamburger.setAttribute('aria-expanded', open);
+        });
+        drawer.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => {
+                drawer.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', false);
+            });
+        });
+    }
     </script>

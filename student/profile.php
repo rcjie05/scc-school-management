@@ -256,6 +256,13 @@ $initials  = strtoupper(substr($user['name'] ?? 'S', 0, 1));
         });
     })();
     </script>
-    <script src="/js/session-monitor.js"></script>
+<nav class="mobile-bottom-nav">
+  <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span>Home</a>
+  <a href="subjects.php" class="mobile-nav-item"><span class="mobile-nav-icon">📚</span>Subjects</a>
+  <a href="schedule.php" class="mobile-nav-item"><span class="mobile-nav-icon">📅</span>Schedule</a>
+  <a href="grades.php" class="mobile-nav-item"><span class="mobile-nav-icon">📊</span>Grades</a>
+  <a href="profile.php" class="mobile-nav-item active"><span class="mobile-nav-icon">👤</span>Profile</a>
+</nav>
+    <script src="../js/session-monitor.js"></script>
 </body>
 </html>

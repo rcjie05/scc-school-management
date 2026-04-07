@@ -571,7 +571,7 @@ loadCourses();
         });
     })();
     </script>
-<script src="/js/pwa.js"></script>
+<script src="../js/pwa.js"></script>
 
 <!-- Mobile Bottom Navigation -->
 <nav class="mobile-bottom-nav">
@@ -581,6 +581,6 @@ loadCourses();
   <a href="sections.php" class="mobile-nav-item "><span class="mobile-nav-icon">📁</span>Sections</a>
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
-    <script src="/js/session-monitor.js"></script>
+    <script src="../js/session-monitor.js"></script>
 </body>
 </html>

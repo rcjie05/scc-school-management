@@ -1,5 +1,13 @@
 <?php
 require_once '../../config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
 header('Content-Type: application/json');
 requireRole('admin');
 
@@ -37,6 +45,16 @@ if (!isset($input['settings']) || !is_array($input['settings'])) {
 
 $updated = 0;
 foreach ($input['settings'] as $key => $value) {
+    // Never overwrite an existing value with an empty string
+    if ($value === '' || $value === null) {
+        // Only skip if a non-empty value already exists in the DB
+        $check = $conn->prepare("SELECT setting_value FROM system_settings WHERE setting_key = ?");
+        $check->bind_param("s", $key);
+        $check->execute();
+        $row = $check->get_result()->fetch_assoc();
+        $check->close();
+        if ($row && $row['setting_value'] !== '') continue; // skip — keep existing
+    }
     $stmt = $conn->prepare("
         UPDATE system_settings 
         SET setting_value = ? 

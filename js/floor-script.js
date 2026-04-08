@@ -259,6 +259,28 @@ window.addEventListener('DOMContentLoaded', async function() {
     
     await initializeFloorPlan();
     console.log('=== FLOOR SCRIPT INITIALIZATION COMPLETE ===');
+
+    // ── Mobile: scale canvas to fit its container ──────────────────
+    function resizeCanvasToContainer() {
+        var container = canvas.parentElement; // .canvas-wrapper
+        if (!container) return;
+        var maxW = container.clientWidth;
+        if (maxW <= 0) return;
+        var nativeW = 900, nativeH = 700;
+        if (maxW < nativeW) {
+            var ratio = maxW / nativeW;
+            canvas.style.width  = maxW + 'px';
+            canvas.style.height = Math.round(nativeH * ratio) + 'px';
+        } else {
+            canvas.style.width  = '';
+            canvas.style.height = '';
+        }
+    }
+    resizeCanvasToContainer();
+    window.addEventListener('resize', function() {
+        resizeCanvasToContainer();
+        drawFloorPlan();
+    });
 });
 
 async function initializeFloorPlan() {

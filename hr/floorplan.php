@@ -1,5 +1,13 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
 requireRole('hr');
 
 $fullName = $_SESSION['name'] ?? 'HR Officer';
@@ -19,8 +27,9 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
-    <title>Campus Map - Saint Cecilia College Portal</title>
+    <title>Campus Map - <?= htmlspecialchars($school_name) ?> Portal</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/floor-styles.css">
@@ -29,14 +38,13 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
         .page-wrapper { display: flex; min-height: 100vh; }
         .main-content { flex: 1; padding: 0; background: #f5f5f5; }
         .floor-container { padding: 20px; max-width: 100%; }
-        .floor-header { background: white; padding: 20px 30px; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
-        .floor-header h1 { margin: 0; font-size: 24px; color: #333; }
+        /* floor-header styles handled by floor-styles.css */
         .container.active { box-shadow: none; margin: 0; background: transparent; }
         .content {
             display: grid !important;
-            grid-template-columns: 1fr 380px !important;
-            gap: 32px !important;
-            padding: 32px !important;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            padding: 24px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -87,11 +95,11 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>HR Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -121,7 +129,7 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
 
     <main class="main-content">
         <div class="floor-header">
-            <h1>🗺️ Campus Navigation Map</h1>
+            <div class="floor-header-row"><button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar"><span></span><span></span><span></span></button><h1>🗺️ Campus Navigation Map</h1></div>
             <p style="margin: 5px 0 0 0; color: #666;">Browse available routes to help you navigate the campus</p>
         </div>
 
@@ -138,6 +146,31 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
                                 <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- RIGHT PANEL: Routes + Legend -->
+                    <div class="right-panel">
+                        <div class="saved-routes" id="hrRouteSelector">
+                            <div class="control-section">
+                                <h3>📚 Available Routes</h3>
+                                <input type="text" class="input-field" id="hrRouteSearch"
+                                    placeholder="🔍 Search routes..."
+                                    oninput="filterHrRoutes()"
+                                    style="margin-bottom: 15px;">
+                                <p style="color: var(--gray-600); font-size: 0.95em; margin-bottom: 15px;">
+                                    Click on any route below to display it on the map
+                                </p>
+                            </div>
+                            <div id="hrRoutesList">
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                                    </svg>
+                                    <p><strong>No routes available</strong></p>
+                                    <p style="font-size: 0.9em; margin-top: 5px;">Check back later for available routes</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="legend">
                             <h4>🗺️ Legend</h4>
                             <div class="legend-items">
@@ -149,34 +182,7 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
                                 <div class="legend-item"><div class="legend-color" style="background:#4ECDC4;"></div><span>Waypoints</span></div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Routes Panel Right -->
-                    <div class="saved-routes" id="hrRouteSelector">
-                        <div class="control-section">
-                            <h3>📚 Available Routes</h3>
-                            <input
-                                type="text"
-                                class="input-field"
-                                id="hrRouteSearch"
-                                placeholder="🔍 Search routes..."
-                                oninput="filterHrRoutes()"
-                                style="margin-bottom: 15px;"
-                            >
-                            <p style="color: var(--gray-600); font-size: 0.95em; margin-bottom: 15px;">
-                                Click on any route below to display it on the map
-                            </p>
-                        </div>
-                        <div id="hrRoutesList">
-                            <div class="empty-state">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                                </svg>
-                                <p><strong>No routes available</strong></p>
-                                <p style="font-size: 0.9em; margin-top: 5px;">Check back later for available routes</p>
-                            </div>
-                        </div>
-                    </div>
+                    </div><!-- end right-panel -->
                 </div>
             </div>
         </div>
@@ -252,5 +258,6 @@ $fullName = $_SESSION['name'] ?? 'HR Officer';
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

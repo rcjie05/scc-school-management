@@ -1,5 +1,13 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
 requireLogin();
 
 // Only admin can access this page
@@ -28,6 +36,7 @@ $fullName = $_SESSION['name'] ?? 'Administrator';
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>Floor Plan Navigator - Admin</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/floor-styles.css">
@@ -47,17 +56,7 @@ $fullName = $_SESSION['name'] ?? 'Administrator';
             padding: 20px;
             max-width: 100%;
         }
-        .floor-header {
-            background: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 20px;
-        }
-        .floor-header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
+        /* floor-header styles handled by floor-styles.css */
         .container.active {
             box-shadow: none;
             margin: 0;
@@ -78,11 +77,11 @@ $fullName = $_SESSION['name'] ?? 'Administrator';
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>Admin Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -118,7 +117,7 @@ $fullName = $_SESSION['name'] ?? 'Administrator';
         <!-- Main Content -->
         <main class="main-content">
             <div class="floor-header">
-                <h1>🗺️ Floor Plan Navigator - Administrator</h1>
+                <div class="floor-header-row"><button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar"><span></span><span></span><span></span></button><h1>🗺️ Floor Plan Navigator - Administrator</h1></div>
                 <p style="margin: 5px 0 0 0; color: #666;">Create and manage navigation routes for the campus</p>
             </div>
 
@@ -337,5 +336,6 @@ $fullName = $_SESSION['name'] ?? 'Administrator';
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

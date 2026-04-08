@@ -12,6 +12,14 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../config.php';
 
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
 // ── Respond helper ────────────────────────────────────────────────────────────
 function respond($success, $message, $extra = []) {
     ob_clean();
@@ -64,7 +72,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
   <tr><td style='background:#8b0000;padding:30px 32px;text-align:center;border-bottom:4px solid #c8a951;'>
     <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>St. Cecilia's College-Cebu</p>
-    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>Saint Cecilia College</p>
+    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>My School</p>
   </td></tr>
 
   <tr><td style='padding:38px 40px;'>

@@ -1,6 +1,14 @@
 <?php
 require_once '../php/config.php';
 
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
 if (!isLoggedIn() || !hasRole('student')) {
     header('Location: ../login.html');
     exit();
@@ -55,6 +63,7 @@ $full_name = $student['name'] ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Re-Enrollment Form — Student Portal</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -846,5 +855,6 @@ async function submitReenrollment() {
   <a href="profile.php" class="mobile-nav-item"><span class="mobile-nav-icon">👤</span>Profile</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

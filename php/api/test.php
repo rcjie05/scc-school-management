@@ -19,6 +19,14 @@ echo json_encode([
 // Test 2: Check if config.php can be loaded
 try {
     require_once __DIR__ . '/../config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
     echo "\n\nConfig loaded successfully!";
 } catch (Exception $e) {
     echo "\n\nConfig load failed: " . $e->getMessage();

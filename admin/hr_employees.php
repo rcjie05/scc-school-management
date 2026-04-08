@@ -1,5 +1,20 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
+// ── Dynamic school name from system_settings ──────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'school_name' LIMIT 1") : false;
+$school_name = ($_sn_res && $_sn_row = $_sn_res->fetch_assoc()) ? $_sn_row['setting_value'] : 'My School';
+$_sn_conn && $_sn_conn->close();
+// ──────────────────────────────────────────────────────────────────────
 requireRole('admin');
 $conn = getDBConnection();
 $depts = $conn->query("SELECT id, name FROM departments ORDER BY name ASC");
@@ -24,6 +39,7 @@ $conn->close();
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>Employee Profiles - HR</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <style>
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
@@ -54,11 +70,11 @@ $conn->close();
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>Admin Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -351,5 +367,6 @@ loadEmployees();
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

@@ -1,5 +1,13 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
 requireRole('hr');
 ?>
 <!DOCTYPE html>
@@ -17,8 +25,9 @@ requireRole('hr');
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
-    <title>Employee ID Cards - Saint Cecilia College</title>
+    <title>Employee ID Cards - <?= htmlspecialchars($school_name) ?></title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -233,11 +242,11 @@ requireRole('hr');
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>HR Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -324,7 +333,7 @@ requireRole('hr');
 <script>
 let allEmployees = [];
 let currentEmp   = null;
-const SCHOOL_NAME = "Saint Cecilia College";
+const SCHOOL_NAME = "<?= htmlspecialchars($school_name) ?>";
 const CURRENT_YEAR = new Date().getFullYear();
 
 async function loadEmployees() {
@@ -422,8 +431,8 @@ function buildCard(emp, side='front') {
             <div class="card-header-band">
                 <div class="card-school-logo">${logoContent}</div>
                 <div class="card-school-name">
-                    <div class="school-title">Saint Cecilia College</div>
-                    <div class="school-sub">Saint Cecilia College</div>
+                    <div class="school-title"><?= htmlspecialchars($school_name) ?></div>
+                    <div class="school-sub"><?= htmlspecialchars($school_name) ?></div>
                 </div>
                 <div class="card-id-label">School ID</div>
             </div>
@@ -711,5 +720,27 @@ loadEmployees();
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
+<script>
+/* mobile-fix: back button for split-layout pages */
+(function(){
+  var splitLayout = document.querySelector(".split-layout, .two-col, .id-layout");
+  if (!splitLayout) return;
+  var panels = splitLayout.children;
+  if (panels.length < 2) return;
+  var listPanel = panels[0], detailPanel = panels[1];
+  var btn = document.createElement("button");
+  btn.className = "mobile-back-btn";
+  btn.innerHTML = "2190 Back to List";
+  detailPanel.insertBefore(btn, detailPanel.firstChild);
+  btn.addEventListener("click", function(){
+    detailPanel.classList.remove("visible");
+    listPanel.style.display = "";
+  });
+  window.addEventListener("resize", function(){
+    if (window.innerWidth > 768) listPanel.style.display = "";
+  });
+})();
+</script>
 </body>
 </html>

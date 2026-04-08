@@ -1,5 +1,13 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
 requireRole('hr');
 ?>
 <!DOCTYPE html>
@@ -17,8 +25,9 @@ requireRole('hr');
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
-    <title>Leave Requests - Saint Cecilia College</title>
+    <title>Leave Requests - <?= htmlspecialchars($school_name) ?></title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <style>
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
@@ -59,11 +68,11 @@ requireRole('hr');
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>HR Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -287,5 +296,6 @@ loadLeaves();
   <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

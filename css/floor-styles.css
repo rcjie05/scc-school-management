@@ -781,3 +781,192 @@ body {
         gap: 20px;
     }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Mobile fix for floorplan pages
+   ════════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  /* Force single column layout */
+  .content {
+    grid-template-columns: 1fr !important;
+    padding: 16px !important;
+    gap: 16px !important;
+  }
+
+  /* Canvas container: no extra padding, let canvas fill width */
+  .canvas-container {
+    padding: 12px !important;
+    gap: 12px !important;
+  }
+
+  /* Canvas itself: scale to container width */
+  #floorPlan {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Routes/controls panel: reasonable height on mobile */
+  .controls, .saved-routes {
+    max-height: 400px !important;
+    padding: 16px !important;
+  }
+
+  /* Legend wraps nicely */
+  .legend {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+  }
+  .legend-items {
+    gap: 10px !important;
+  }
+
+  /* Zoom controls stay in corner */
+  .zoom-controls {
+    top: 10px !important;
+    right: 10px !important;
+  }
+  .zoom-btn {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Floor header: hamburger + title row, subtitle on next line */
+.floor-header {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 16px 20px !important;
+}
+
+.floor-header .sidebar-toggle {
+  flex-shrink: 0;
+  order: 0;
+}
+
+.floor-header h1 {
+  flex: 1 !important;
+  min-width: 0 !important;
+  order: 1;
+  font-size: 1.3rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floor-header p {
+  width: 100% !important;
+  order: 2;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .floor-header h1 {
+    font-size: 1.1rem !important;
+  }
+  .floor-container {
+    padding: 10px !important;
+  }
+}
+
+/* ── Floor header row: toggle + h1 side by side ── */
+.floor-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 16px 20px;
+  background: var(--background-card, #fff);
+  border-bottom: 1px solid var(--border-color, #D4DDE8);
+  margin-bottom: 20px;
+}
+
+.floor-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.floor-header-row .sidebar-toggle {
+  flex-shrink: 0;
+}
+
+.floor-header-row h1 {
+  margin: 0 !important;
+  font-size: 1.3rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.floor-header > p {
+  margin: 0 !important;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #5A6B80);
+}
+
+@media (max-width: 480px) {
+  .floor-header-row h1 {
+    font-size: 1.05rem !important;
+  }
+}
+
+/* ── right-panel: routes on top, legend below ── */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.right-panel .saved-routes {
+  flex: 1;
+  max-height: calc(100vh - 320px);
+  min-height: 200px;
+}
+
+.right-panel .legend {
+  flex-shrink: 0;
+  background: var(--background-card, #fff);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #D4DDE8);
+  padding: 14px 16px;
+}
+
+.right-panel .legend h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.right-panel .legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.right-panel .my-classes-section {
+  flex-shrink: 0;
+}
+
+/* On mobile: right-panel stacks below canvas */
+@media (max-width: 900px) {
+  .right-panel .saved-routes {
+    max-height: 350px;
+  }
+  .right-panel .legend-items {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

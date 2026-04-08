@@ -1,5 +1,20 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
+// ── Dynamic school name from system_settings ──────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'school_name' LIMIT 1") : false;
+$school_name = ($_sn_res && $_sn_row = $_sn_res->fetch_assoc()) ? $_sn_row['setting_value'] : 'My School';
+$_sn_conn && $_sn_conn->close();
+// ──────────────────────────────────────────────────────────────────────
 $student_course = strtolower($_SESSION['course'] ?? '');
 $_avatar_conn = getDBConnection();
 $_col = $_avatar_conn->query("SHOW COLUMNS FROM `users` LIKE 'avatar_url'");
@@ -24,8 +39,9 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
     <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Saint Cecilia College</title>
+    <title>Student Dashboard - <?= htmlspecialchars($school_name) ?></title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <style>
         /* ── Weekly Schedule Widget ── */
@@ -67,12 +83,14 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
         .sched-item {
             display: flex;
             align-items: stretch;
-            gap: 0.9rem;
+            gap: 0.75rem;
             background: var(--background-main, #f9fafb);
             border-radius: var(--radius-md);
-            padding: 0.9rem 1rem;
+            padding: 0.85rem 0.85rem;
             border-left: 4px solid var(--primary-purple);
             transition: box-shadow 0.15s;
+            min-width: 0;
+            overflow: hidden;
         }
         .sched-item:hover { box-shadow: 0 2px 8px rgba(91,78,155,0.12); }
         .sched-time-col {
@@ -80,7 +98,9 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 62px;
+            min-width: 58px;
+            max-width: 58px;
+            flex-shrink: 0;
             text-align: center;
         }
         .sched-time-start {
@@ -97,14 +117,16 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
             background: var(--border-color);
             align-self: stretch;
         }
-        .sched-info { flex: 1; min-width: 0; }
+        .sched-info { flex: 1; min-width: 0; overflow: hidden; }
+        .sched-divider { flex-shrink: 0; }
         .sched-subj {
             font-weight: 700;
             color: var(--text-primary);
             font-size: 0.92rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            line-height: 1.3;
         }
         .sched-subj-code {
             font-size: 0.75rem;
@@ -114,7 +136,7 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
         }
         .sched-meta {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem 0.6rem;
             flex-wrap: wrap;
             margin-top: 0.3rem;
         }
@@ -122,8 +144,12 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
             font-size: 0.78rem;
             color: var(--text-secondary);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.25rem;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            min-width: 0;
+            flex-shrink: 1;
         }
         .no-class-msg {
             text-align: center;
@@ -193,11 +219,11 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>Student Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -229,12 +255,12 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
             <header class="page-header">
                 <div class="header-title">
                     <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
-                    <h1>Welcome to Saint Cecilia College</h1>
+                    <h1>Welcome to <?= htmlspecialchars($school_name) ?></h1>
                 </div>
                 <div class="header-actions">
                     <div class="school-year-badge">
                         <span>📚</span>
-                        <span>School Year 2024 - 2025</span>
+                        <span>School Year <?= htmlspecialchars($current_school_year) ?></span>
                     </div>
                     <a href="profile.php" style="text-decoration:none;">
                     <div class="user-profile">
@@ -632,5 +658,6 @@ $_initials   = strtoupper(substr($_avatar_user['name'] ?? '?', 0, 1));
   <a href="profile.php" class="mobile-nav-item"><span class="mobile-nav-icon">👤</span>Profile</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

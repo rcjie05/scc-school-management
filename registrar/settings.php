@@ -1,5 +1,20 @@
 <?php
 require_once '../php/config.php';
+
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
+// ── Dynamic school name from system_settings ──────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_value FROM system_settings WHERE setting_key = 'school_name' LIMIT 1") : false;
+$school_name = ($_sn_res && $_sn_row = $_sn_res->fetch_assoc()) ? $_sn_row['setting_value'] : 'My School';
+$_sn_conn && $_sn_conn->close();
+// ──────────────────────────────────────────────────────────────────────
 requireRole('registrar');
 
 $conn    = getDBConnection();
@@ -30,6 +45,7 @@ $initials  = strtoupper(substr($user['name'] ?? 'R', 0, 1));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Registrar Dashboard</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="stylesheet" href="../css/themes.css">
     <style>
         <?php include '../php/avatar_styles.php'; ?>
@@ -45,11 +61,11 @@ $initials  = strtoupper(substr($user['name'] ?? 'R', 0, 1));
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <div class="logo-icon">
-                    <img src="../images/logo2.jpg" alt="SCC Logo" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
+                    <img src="../images/logo2.jpg" alt="SCC Logo" id="sidebarLogoImg" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);">
                 </div>
                 <div class="logo-text">
-                    Saint Cecilia College
-                    <span>Saint Cecilia College</span>
+                    <span id="sidebarSchoolName"><?= htmlspecialchars($school_name) ?></span>
+                    <span>Registrar Portal</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -284,5 +300,6 @@ $initials  = strtoupper(substr($user['name'] ?? 'R', 0, 1));
   <a href="reports.php" class="mobile-nav-item"><span class="mobile-nav-icon">📈</span>Reports</a>
 </nav>
     <script src="../js/session-monitor.js"></script>
+    <script src="../js/apply-branding.js"></script>
 </body>
 </html>

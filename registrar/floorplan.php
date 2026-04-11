@@ -214,7 +214,6 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
                     <div class="nav-section-title">System</div>
                     <a href="announcements.php" class="nav-item"><span class="nav-icon">📢</span><span>Announcements</span></a>
                     <a href="feedback.php" class="nav-item"><span class="nav-icon">💬</span><span>Feedback</span></a>
-                    <a href="settings.php" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">HR</div>
@@ -372,13 +371,6 @@ $fullName = $_SESSION['name'] ?? 'Registrar';
         });
     })();
     </script>
-<nav class="mobile-bottom-nav">
-  <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span>Home</a>
-  <a href="applications.php" class="mobile-nav-item"><span class="mobile-nav-icon">📋</span>Apps</a>
-  <a href="manage_loads.php" class="mobile-nav-item"><span class="mobile-nav-icon">📚</span>Loads</a>
-  <a href="grades.php" class="mobile-nav-item"><span class="mobile-nav-icon">🎓</span>Grades</a>
-  <a href="reports.php" class="mobile-nav-item"><span class="mobile-nav-icon">📈</span>Reports</a>
-</nav>
     <script src="../js/session-monitor.js"></script>
     <script src="../js/apply-branding.js"></script>
 </body>

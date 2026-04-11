@@ -47,7 +47,6 @@ $updated = 0;
 foreach ($input['settings'] as $key => $value) {
     // Never overwrite an existing value with an empty string
     if ($value === '' || $value === null) {
-        // Only skip if a non-empty value already exists in the DB
         $check = $conn->prepare("SELECT setting_value FROM system_settings WHERE setting_key = ?");
         $check->bind_param("s", $key);
         $check->execute();
@@ -55,12 +54,13 @@ foreach ($input['settings'] as $key => $value) {
         $check->close();
         if ($row && $row['setting_value'] !== '') continue; // skip — keep existing
     }
+    // Use INSERT ... ON DUPLICATE KEY UPDATE so new settings are created automatically
     $stmt = $conn->prepare("
-        UPDATE system_settings 
-        SET setting_value = ? 
-        WHERE setting_key = ?
+        INSERT INTO system_settings (setting_key, setting_value, description)
+        VALUES (?, ?, '')
+        ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
     ");
-    $stmt->bind_param("ss", $value, $key);
+    $stmt->bind_param("ss", $key, $value);
     if ($stmt->execute()) {
         $updated++;
     }

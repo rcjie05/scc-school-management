@@ -1,4 +1,4 @@
-<?php require_once '../php/config.php'; requireRole('registrar'); ?>
+<?php require_once '../php/config.php'; requireRole('registrar');
 
 // ── Dynamic school name & school year ────────────────────────────────
 $_sn_conn = getDBConnection();
@@ -7,6 +7,7 @@ $school_name = 'My School';
 $current_school_year = '----';
 if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
 // ──────────────────────────────────────────────────────────────────────
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,7 +104,6 @@ if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setti
                     <div class="nav-section-title">System</div>
                     <a href="announcements.php" class="nav-item"><span class="nav-icon">📢</span><span>Announcements</span></a>
                     <a href="feedback.php" class="nav-item"><span class="nav-icon">💬</span><span>Feedback</span></a>
-                    <a href="settings.php" class="nav-item"><span class="nav-icon">⚙️</span><span>Settings</span></a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">HR</div>
@@ -661,13 +661,6 @@ boot();
         });
     })();
     </script>
-<nav class="mobile-bottom-nav">
-  <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span>Home</a>
-  <a href="applications.php" class="mobile-nav-item"><span class="mobile-nav-icon">📋</span>Apps</a>
-  <a href="manage_loads.php" class="mobile-nav-item active"><span class="mobile-nav-icon">📚</span>Loads</a>
-  <a href="grades.php" class="mobile-nav-item"><span class="mobile-nav-icon">🎓</span>Grades</a>
-  <a href="reports.php" class="mobile-nav-item"><span class="mobile-nav-icon">📈</span>Reports</a>
-</nav>
     <script src="../js/session-monitor.js"></script>
     <script src="../js/apply-branding.js"></script>
 <script>
@@ -691,5 +684,34 @@ boot();
   });
 })();
 </script>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <a href="dashboard.php" class="mobile-nav-item" data-page="dashboard">
+        <span class="mobile-nav-icon">📊</span><span>Home</span>
+      </a>
+      <a href="applications.php" class="mobile-nav-item" data-page="applications">
+        <span class="mobile-nav-icon">📋</span><span>Apps</span>
+      </a>
+      <a href="manage_loads.php" class="mobile-nav-item" data-page="manage_loads">
+        <span class="mobile-nav-icon">📚</span><span>Loads</span>
+      </a>
+      <a href="announcements.php" class="mobile-nav-item" data-page="announcements">
+        <span class="mobile-nav-icon">📢</span><span>Notices</span>
+      </a>
+      <a href="profile.php" class="mobile-nav-item" data-page="profile">
+        <span class="mobile-nav-icon">👤</span><span>Profile</span>
+      </a>
+    </nav>
+
+    <script>
+    // Auto-highlight mobile bottom nav item
+    (function() {
+      var page = location.pathname.split('/').pop().replace('.php','');
+      document.querySelectorAll('.mobile-nav-item').forEach(function(el) {
+        if (el.dataset.page === page) el.classList.add('active');
+      });
+    })();
+    </script>
+
 </body>
 </html>

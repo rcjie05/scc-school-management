@@ -121,6 +121,26 @@ function requireRole($role) {
     }
 }
 
+// ── API-safe role check (returns JSON instead of redirecting) ─────────────────
+function requireRoleApi($role) {
+    header('Content-Type: application/json');
+    if (!isLoggedIn()) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
+        exit();
+    }
+    if (!checkUserStatus()) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Account is deactivated.']);
+        exit();
+    }
+    if (!hasRole($role)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Unauthorized. Insufficient role.']);
+        exit();
+    }
+}
+
 // ── Input Sanitization ────────────────────────────────────────────────────────
 function sanitizeInput($data) {
     $data = trim($data);
@@ -173,4 +193,5 @@ define('SMTP_ENCRYPTION', 'tls');
 define('SMTP_USERNAME',   getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
 define('SMTP_PASSWORD',   getenv('SMTP_APP_PASSWORD') ?: 'REPLACE_WITH_YOUR_APP_PASSWORD');
 define('SMTP_FROM_EMAIL', getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
-define('SMTP_FROM_NAME',  "St. Cecilia's College-Cebu");
+// SMTP_FROM_NAME is set dynamically — see smtp config
+define('SMTP_FROM_NAME', (function(){ $c=getDBConnection(); $r=$c?$c->query("SELECT setting_value FROM system_settings WHERE setting_key='school_name' LIMIT 1"):false; $n=$r?$r->fetch_assoc()['setting_value']??"School Portal":"School Portal"; $c&&$c->close(); return $n; })());

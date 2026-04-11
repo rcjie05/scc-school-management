@@ -60,7 +60,7 @@ function safeLog($conn, $user_id, $action) {
 
 // ── Send OTP via Gmail SMTP ───────────────────────────────────────────────────
 function sendOtpEmail($toEmail, $toName, $otp) {
-    $subject = "Your Password Reset OTP - St. Cecilia's College-Cebu";
+    $subject = "Your Password Reset OTP - " . $school_name . "";
     $name    = htmlspecialchars($toName, ENT_QUOTES);
     $year    = date('Y');
 
@@ -71,7 +71,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 <table width='500' cellpadding='0' cellspacing='0' style='background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12);'>
 
   <tr><td style='background:#8b0000;padding:30px 32px;text-align:center;border-bottom:4px solid #c8a951;'>
-    <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>St. Cecilia's College-Cebu</p>
+    <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>" . $school_name . "</p>
     <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>My School</p>
   </td></tr>
 
@@ -95,7 +95,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
   </td></tr>
 
   <tr><td style='background:#f8f8f8;padding:16px 40px;border-top:1px solid #eee;text-align:center;'>
-    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; {$year} St. Cecilia's College-Cebu, Inc. &middot; All rights reserved</p>
+    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; {$year} " . $school_name . ", Inc. &middot; All rights reserved</p>
   </td></tr>
 
 </table>

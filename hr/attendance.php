@@ -18,12 +18,12 @@ requireRole('hr');
     <link rel="shortcut icon" type="image/jpeg" href="../images/logo2.jpg">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#1E3352">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SCC Portal">
+    <meta name="apple-mobile-web-app-title" content="<?= htmlspecialchars($school_name) ?> Portal">
     <link rel="apple-touch-icon" href="../images/logo2.jpg">
     <title>Attendance Tracking - <?= htmlspecialchars($school_name) ?></title>
     <link rel="stylesheet" href="../css/style.css">
@@ -498,14 +498,36 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 <script src="../js/pwa.js"></script>
 
 <!-- Mobile Bottom Navigation -->
-<nav class="mobile-bottom-nav">
-  <a href="dashboard.php" class="mobile-nav-item "><span class="mobile-nav-icon">📊</span>Dashboard</a>
-  <a href="employees.php" class="mobile-nav-item "><span class="mobile-nav-icon">👤</span>Employees</a>
-  <a href="leaves.php" class="mobile-nav-item "><span class="mobile-nav-icon">📅</span>Leaves</a>
-  <a href="attendance.php" class="mobile-nav-item active"><span class="mobile-nav-icon">🕐</span>Attendance</a>
-  <a href="announcements.php" class="mobile-nav-item "><span class="mobile-nav-icon">📢</span>More</a>
-</nav>
     <script src="../js/session-monitor.js"></script>
     <script src="../js/apply-branding.js"></script>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <a href="dashboard.php" class="mobile-nav-item" data-page="dashboard">
+        <span class="mobile-nav-icon">📊</span><span>Home</span>
+      </a>
+      <a href="employees.php" class="mobile-nav-item" data-page="employees">
+        <span class="mobile-nav-icon">👤</span><span>Staff</span>
+      </a>
+      <a href="attendance.php" class="mobile-nav-item" data-page="attendance">
+        <span class="mobile-nav-icon">🕐</span><span>Attend.</span>
+      </a>
+      <a href="leaves.php" class="mobile-nav-item" data-page="leaves">
+        <span class="mobile-nav-icon">📅</span><span>Leaves</span>
+      </a>
+      <a href="profile.php" class="mobile-nav-item" data-page="profile">
+        <span class="mobile-nav-icon">👤</span><span>Profile</span>
+      </a>
+    </nav>
+
+    <script>
+    // Auto-highlight mobile bottom nav item
+    (function() {
+      var page = location.pathname.split('/').pop().replace('.php','');
+      document.querySelectorAll('.mobile-nav-item').forEach(function(el) {
+        if (el.dataset.page === page) el.classList.add('active');
+      });
+    })();
+    </script>
+
 </body>
 </html>

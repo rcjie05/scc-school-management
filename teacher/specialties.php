@@ -296,14 +296,36 @@ $teacher_id = $_SESSION['user_id'];
         });
     })();
     </script>
-<nav class="mobile-bottom-nav">
-  <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">🏠</span>Home</a>
-  <a href="classes.php" class="mobile-nav-item"><span class="mobile-nav-icon">📚</span>Classes</a>
-  <a href="schedule.php" class="mobile-nav-item"><span class="mobile-nav-icon">📅</span>Schedule</a>
-  <a href="announcements.php" class="mobile-nav-item"><span class="mobile-nav-icon">📢</span>News</a>
-  <a href="profile.php" class="mobile-nav-item"><span class="mobile-nav-icon">👤</span>Profile</a>
-</nav>
     <script src="../js/session-monitor.js"></script>
     <script src="../js/apply-branding.js"></script>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <a href="dashboard.php" class="mobile-nav-item" data-page="dashboard">
+        <span class="mobile-nav-icon">📊</span><span>Home</span>
+      </a>
+      <a href="schedule.php" class="mobile-nav-item" data-page="schedule">
+        <span class="mobile-nav-icon">📅</span><span>Schedule</span>
+      </a>
+      <a href="classes.php" class="mobile-nav-item" data-page="classes">
+        <span class="mobile-nav-icon">📚</span><span>Classes</span>
+      </a>
+      <a href="announcements.php" class="mobile-nav-item" data-page="announcements">
+        <span class="mobile-nav-icon">📢</span><span>Notices</span>
+      </a>
+      <a href="profile.php" class="mobile-nav-item" data-page="profile">
+        <span class="mobile-nav-icon">👤</span><span>Profile</span>
+      </a>
+    </nav>
+
+    <script>
+    // Auto-highlight mobile bottom nav item
+    (function() {
+      var page = location.pathname.split('/').pop().replace('.php','');
+      document.querySelectorAll('.mobile-nav-item').forEach(function(el) {
+        if (el.dataset.page === page) el.classList.add('active');
+      });
+    })();
+    </script>
+
 </body>
 </html>

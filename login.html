@@ -6,13 +6,13 @@
     <link rel="shortcut icon" type="image/jpeg" href="images/logo2.jpg">
     <link rel="apple-touch-icon" href="images/logo2.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1E3352">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SCC Portal">
-    <title>Login — St. Cecilia's College-Cebu, Inc.</title>
+    <title>Login — Student Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -314,11 +314,11 @@
 <!-- Loading Screen -->
 <div id="loading-screen">
     <div class="loading-logo">
-        <img src="images/logo.png" alt="SCC Logo" onerror="this.parentNode.innerHTML='SCC'">
+        <img id="brandLogoLoading" src="images/logo.png" alt="School Logo" onerror="this.parentNode.innerHTML='SCHOOL'">
     </div>
     <div class="loading-school-name">
-        St. Cecilia's College-Cebu, Inc.
-        <small>Student Portal</small>
+        <span id="brandNameLoading">St. Cecilia's College-Cebu, Inc.</span>
+        <small id="brandAddressLoading">Student Portal</small>
     </div>
     <div class="loading-bar-wrap">
         <div class="loading-bar" id="loadingBar"></div>
@@ -332,17 +332,17 @@
 <div class="topbar">
     <div class="topbar-left"><span>#AllevoSCC — Challenges Minds · Moves Hearts · Changes Lives</span></div>
     <div class="topbar-right">
-        <span>📞 <a href="tel:032-268-4746">(032) 268-4746</a></span>
-        <span>✉ <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a></span>
+        <span>📞 <a id="brandPhoneLink" href="tel:032-268-4746"><span id="brandPhone">(032) 268-4746</span></a></span>
+        <span>✉ <a id="brandEmailLink" href="mailto:info@stcecilia.edu.ph"><span id="brandEmail">info@stcecilia.edu.ph</span></a></span>
     </div>
 </div>
 
 <nav class="navbar">
     <a href="index.html" class="nav-brand">
-        <div class="nav-logo"><img src="images/logo2.jpg" alt="SCC Logo"></div>
+        <div class="nav-logo"><img id="brandLogoNav" src="images/logo2.jpg" alt="School Logo"></div>
         <div class="nav-name">
-            <strong>St. Cecilia's College-Cebu, Inc.</strong>
-            <small>Poblacion Ward II, Minglanilla, Cebu — Est. 1999</small>
+            <strong id="brandNameNav">St. Cecilia's College-Cebu, Inc.</strong>
+            <small id="brandAddressNav">Poblacion Ward II, Minglanilla, Cebu — Est. 1999</small>
         </div>
     </a>
         <div class="nav-links">
@@ -394,10 +394,10 @@
     <div class="login-side">
         <div class="login-head">
             <div class="login-logo">
-                <img src="images/logo.png" alt="SCC Logo" onerror="this.parentNode.innerHTML='SCC<br>CI'">
+                <img id="brandLogoLogin" src="images/logo.png" alt="School Logo" onerror="this.parentNode.innerHTML='SCHOOL'">
             </div>
-            <h2>St. Cecilia's College-Cebu, Inc.</h2>
-            <p>Saint Cecilia College &middot; Student Portal</p>
+            <h2 id="brandNameLogin">St. Cecilia's College-Cebu, Inc.</h2>
+            <p id="brandNameLoginSub">St. Cecilia's College &middot; Student Portal</p>
         </div>
 
         <div class="login-body">
@@ -431,15 +431,15 @@
 
             <div class="info-box">
                 <strong>Need help logging in?</strong>
-                Contact the Registrar at <a href="tel:032-326-3677">(032) 326-3677</a>
-                or <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a>
+                Contact the Registrar at <a id="brandRegistrarPhoneLink" href="tel:032-326-3677"><span id="brandRegistrarPhone">(032) 326-3677</span></a>
+                or <a id="brandEmailLink2" href="mailto:info@stcecilia.edu.ph"><span id="brandEmail2">info@stcecilia.edu.ph</span></a>
             </div>
         </div>
     </div>
 </div>
 
 <div class="page-footer">
-    <p>&copy; 2025 St. Cecilia's College-Cebu, Inc. &middot; All rights reserved</p>
+    <p>&copy; 2025 <span id="brandNameFooter">St. Cecilia's College-Cebu, Inc.</span> &middot; All rights reserved</p>
     <a href="https://stcecilia.edu.ph" target="_blank">stcecilia.edu.ph</a>
 </div>
 
@@ -840,7 +840,7 @@
 })();
 </script>
 
-<script src="/js/pwa.js"></script>
+<script src="js/pwa.js"></script>
 
 <script>
 // Show session/error messages from URL params
@@ -882,5 +882,76 @@
     })();
 </script>
 
+<script>
+// ── Dynamic Branding (school name + logo from admin settings) ─────────
+(async function applyBranding() {
+    try {
+        const res  = await fetch('php/api/get_branding_public.php');
+        const data = await res.json();
+        if (!data.success) return;
+
+        const name    = data.school_name    || '';
+        const logo    = data.school_logo    || '';
+        const address = data.school_address || '';
+        const phone   = data.school_phone   || '';
+        const regPhone= data.registrar_phone|| '';
+        const email   = data.school_email   || '';
+        const website = data.school_website || '';
+
+        // Update all name text elements
+        ['brandNameLoading','brandNameNav','brandNameLogin','brandNameFooter'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && name) el.textContent = name;
+        });
+
+        // Update address in navbar, loading screen, and login box sub-text
+        if (address) {
+            ['brandAddressNav', 'brandAddressLoading'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = address;
+            });
+        }
+
+        // Sub-title under login box — show address if available, else fallback
+        const sub = document.getElementById('brandNameLoginSub');
+        if (sub) sub.textContent = address ? address : (name + ' · Student Portal');
+
+        // Update contact info in topbar
+        if (phone) {
+            const ph = document.getElementById('brandPhone');
+            const phLink = document.getElementById('brandPhoneLink');
+            if (ph) ph.textContent = phone;
+            if (phLink) phLink.href = 'tel:' + phone.replace(/\D/g, '');
+        }
+        if (email) {
+            ['brandEmail','brandEmail2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = email;
+            });
+            ['brandEmailLink','brandEmailLink2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.href = 'mailto:' + email;
+            });
+        }
+        if (regPhone) {
+            const rph = document.getElementById('brandRegistrarPhone');
+            const rphLink = document.getElementById('brandRegistrarPhoneLink');
+            if (rph) rph.textContent = regPhone;
+            if (rphLink) rphLink.href = 'tel:' + regPhone.replace(/\D/g, '');
+        }
+
+        // Update page title
+        if (name) document.title = 'Login — ' + name;
+
+        // Update all logo images
+        if (logo) {
+            ['brandLogoLoading','brandLogoNav','brandLogoLogin'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img) { img.src = logo; img.alt = name + ' Logo'; }
+            });
+        }
+    } catch (e) { /* silently keep defaults */ }
+})();
+</script>
 </body>
 </html>

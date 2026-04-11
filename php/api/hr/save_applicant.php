@@ -99,14 +99,14 @@ if ($stmt->execute()) {
               </div>
               <div style='padding:28px 32px;color:#374151;'>
                 <p>Dear <strong>{$full_name}</strong>,</p>
-                <p>We are pleased to inform you that you have been selected for an interview for the position of <strong>{$job_title}</strong> at <strong>St. Cecilia's College-Cebu</strong>.</p>
+                <p>We are pleased to inform you that you have been selected for an interview for the position of <strong>{$job_title}</strong> at <strong>" . $school_name . "</strong>.</p>
                 <div style='background:#f5f3ff;border-left:4px solid #8b5cf6;padding:12px 16px;margin:20px 0;border-radius:4px;'>
                   <p style='margin:0;'><strong>Interview Date:</strong> {$interview_formatted}</p>
                   " . ($interview_notes ? "<p style='margin:8px 0 0;'><strong>Notes:</strong> " . htmlspecialchars($interview_notes) . "</p>" : "") . "
                 </div>
                 <p>Please confirm your attendance by replying to this email. If you have any questions, feel free to reach out to us.</p>
                 <p>We look forward to meeting you!</p>
-                <p style='margin-top:32px;'>Best regards,<br><strong>Human Resources Department</strong><br>St. Cecilia's College-Cebu</p>
+                <p style='margin-top:32px;'>Best regards,<br><strong>Human Resources Department</strong><br>" . $school_name . "</p>
               </div>
               <div style='background:#f9fafb;padding:14px 32px;text-align:center;font-size:0.78rem;color:#9ca3af;'>
                 This is an automated message from the SCC HR System. Please do not reply directly to this email.
@@ -124,14 +124,14 @@ if ($stmt->execute()) {
               </div>
               <div style='padding:28px 32px;color:#374151;'>
                 <p>Dear <strong>{$full_name}</strong>,</p>
-                <p>Congratulations! After careful consideration, we are delighted to extend a job offer to you for the position of <strong>{$job_title}</strong> at <strong>St. Cecilia's College-Cebu</strong>.</p>
+                <p>Congratulations! After careful consideration, we are delighted to extend a job offer to you for the position of <strong>{$job_title}</strong> at <strong>" . $school_name . "</strong>.</p>
                 <div style='background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;margin:20px 0;border-radius:4px;'>
                   <p style='margin:0;'><strong>Position:</strong> {$job_title}</p>
                   <p style='margin:8px 0 0;'><strong>Offer Date:</strong> {$offer_formatted}</p>
                 </div>
                 <p>Please review the offer details and respond at your earliest convenience. Our HR team will follow up with you regarding the next steps, including onboarding documentation.</p>
                 <p>We are excited about the possibility of you joining our team!</p>
-                <p style='margin-top:32px;'>Best regards,<br><strong>Human Resources Department</strong><br>St. Cecilia's College-Cebu</p>
+                <p style='margin-top:32px;'>Best regards,<br><strong>Human Resources Department</strong><br>" . $school_name . "</p>
               </div>
               <div style='background:#f9fafb;padding:14px 32px;text-align:center;font-size:0.78rem;color:#9ca3af;'>
                 This is an automated message from the SCC HR System. Please do not reply directly to this email.
@@ -148,13 +148,13 @@ if ($stmt->execute()) {
               </div>
               <div style='padding:28px 32px;color:#374151;'>
                 <p>Dear <strong>{$full_name}</strong>,</p>
-                <p>We are thrilled to inform you that you have been officially <strong>hired</strong> for the position of <strong>{$job_title}</strong> at <strong>St. Cecilia's College-Cebu</strong>!</p>
+                <p>We are thrilled to inform you that you have been officially <strong>hired</strong> for the position of <strong>{$job_title}</strong> at <strong>" . $school_name . "</strong>!</p>
                 <div style='background:#f0fdf4;border-left:4px solid #10b981;padding:12px 16px;margin:20px 0;border-radius:4px;'>
                   <p style='margin:0;'><strong>Position:</strong> {$job_title}</p>
                   <p style='margin:8px 0 0;'>Our HR team will be reaching out shortly with further details regarding your onboarding schedule, orientation, and system account access.</p>
                 </div>
                 <p>We are truly excited to have you join the SCC family. Welcome aboard!</p>
-                <p style='margin-top:32px;'>Warm regards,<br><strong>Human Resources Department</strong><br>St. Cecilia's College-Cebu</p>
+                <p style='margin-top:32px;'>Warm regards,<br><strong>Human Resources Department</strong><br>" . $school_name . "</p>
               </div>
               <div style='background:#f9fafb;padding:14px 32px;text-align:center;font-size:0.78rem;color:#9ca3af;'>
                 This is an automated message from the SCC HR System. Please do not reply directly to this email.

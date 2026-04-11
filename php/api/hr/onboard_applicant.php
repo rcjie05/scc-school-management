@@ -95,7 +95,7 @@ if ($email) {
     $host      = $_SERVER['HTTP_HOST'] ?? 'scc-school.local';
     $login_url = $protocol . '://' . $host . '/login.html';
 
-    $subject = "Welcome to St. Cecilia's College-Cebu – Your Account is Ready!";
+    $subject = "Welcome to " . $school_name . " – Your Account is Ready!";
     $body = "
     <div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;'>
       <div style='background:#10b981;padding:24px 32px;'>
@@ -103,7 +103,7 @@ if ($email) {
       </div>
       <div style='padding:28px 32px;color:#374151;'>
         <p>Dear <strong>{$name}</strong>,</p>
-        <p>We are thrilled to welcome you to <strong>St. Cecilia's College-Cebu</strong>! Your application for <strong>{$job_title}</strong> has been approved and you have been officially onboarded as part of our team.</p>
+        <p>We are thrilled to welcome you to <strong>" . $school_name . "</strong>! Your application for <strong>{$job_title}</strong> has been approved and you have been officially onboarded as part of our team.</p>
 
         <div style='background:#f0fdf4;border-left:4px solid #10b981;padding:16px 20px;margin:20px 0;border-radius:4px;'>
           <p style='margin:0 0 8px;font-weight:700;color:#166534;'>&#128272; Your System Login Credentials</p>
@@ -118,7 +118,7 @@ if ($email) {
 
         <p>Our HR team will be in touch with you regarding your onboarding schedule, orientation, and other important details. If you have any questions, please don't hesitate to reach out.</p>
         <p>We are so excited to have you on board. Welcome to the SCC family!</p>
-        <p style='margin-top:32px;'>Warm regards,<br><strong>Human Resources Department</strong><br>St. Cecilia's College-Cebu</p>
+        <p style='margin-top:32px;'>Warm regards,<br><strong>Human Resources Department</strong><br>" . $school_name . "</p>
       </div>
       <div style='background:#f9fafb;padding:14px 32px;text-align:center;font-size:0.78rem;color:#9ca3af;'>
         This is an automated message from the SCC HR System. Please do not reply directly to this email.

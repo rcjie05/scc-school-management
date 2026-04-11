@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enrollment Form — St. Cecilia's College-Cebu, Inc.</title>
+<title>Enrollment Form — Student Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -427,7 +427,7 @@ body {
 <body>
 
 <div class="screen-bar">
-  <h2>St. Cecilia's College-Cebu — Enrollment Form &nbsp;|&nbsp; </h2>
+  <h2><span id="brandNameHeader">St. Cecilia's College-Cebu</span> — Enrollment Form &nbsp;|&nbsp; </h2>
   <button class="btn-back" onclick="if(window.self !== window.top){ window.parent.history.back(); } else { window.history.back(); }">⬅️ Back</button>
   <button class="btn-print" onclick="window.print()">🖨️ Print</button>
 </div>
@@ -452,7 +452,7 @@ body {
           <label><input type="checkbox"> Drug Test</label>
         </div>
         <div class="school-center">
-          <div class="sc-name">St. Cecilia's College - Cebu, Inc.</div>
+          <div class="sc-name" id="brandNameForm1">St. Cecilia's College - Cebu, Inc.</div>
           <div class="sc-sub">De La Salle Supervised School</div>
           <div class="sc-dept">Higher Education Department</div>
           <div class="sc-title">Registration Form</div>
@@ -561,7 +561,7 @@ body {
           <label><input type="checkbox"> Drug Test</label>
         </div>
         <div class="school-center">
-          <div class="sc-name">St. Cecilia's College - Cebu, Inc.</div>
+          <div class="sc-name" id="brandNameForm1">St. Cecilia's College - Cebu, Inc.</div>
           <div class="sc-sub">De La Salle Supervised School</div>
           <div class="sc-dept">Higher Education Department</div>
           <div class="sc-title">Registration Form</div>
@@ -791,4 +791,21 @@ buildRows('tbody-s', 'total-s');
 buildRows('tbody-r', 'total-r');
 </script>
 </body>
+
+<script>
+(async function applyBranding() {
+    try {
+        const res  = await fetch('php/api/get_branding_public.php');
+        const data = await res.json();
+        if (!data.success) return;
+        const name = data.school_name || '';
+        if (name) {
+            document.querySelectorAll('.sc-name').forEach(el => el.textContent = name);
+            const hdr = document.getElementById('brandNameHeader');
+            if (hdr) hdr.textContent = name;
+            document.title = 'Enrollment Form — ' + name;
+        }
+    } catch(e) {}
+})();
+</script>
 </html>

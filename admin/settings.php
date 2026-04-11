@@ -23,7 +23,7 @@ requireRole('admin');
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SCC Portal">
+    <meta name="apple-mobile-web-app-title" content="<?= htmlspecialchars($school_name) ?> Portal">
     <title>System Settings — Admin</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
@@ -369,6 +369,16 @@ function renderSettings(settings) {
                            ' oninput="markDirty()">' +
                 '</div>' +
 
+                // School Address
+                '<div class="setting-row">' +
+                    '<label for="school_address">School Address</label>' +
+                    '<div class="setting-desc">Full address shown on reports, ID cards, and the contact section.</div>' +
+                    '<input type="text" id="school_address" class="setting-input" data-key="school_address"' +
+                           ' value="' + escHtml(get('school_address')) + '"' +
+                           ' placeholder="e.g. Poblacion Ward II, Minglanilla, Cebu Philippines 6046"' +
+                           ' oninput="markDirty()">' +
+                '</div>' +
+
                 // Logo
                 '<div class="setting-row">' +
                     '<label>School Logo</label>' +
@@ -385,6 +395,63 @@ function renderSettings(settings) {
                             '<div class="setting-desc" id="logoStatus">Click the image or button to upload a new logo.</div>' +
                         '</div>' +
                     '</div>' +
+                '</div>' +
+
+            '</div>' +
+        '</div>' +
+
+        // ── Contact Information ───────────────────────────────────────────
+        '<div class=\"settings-section full-width\">' +
+            '<div class=\"section-header\"><span class=\"section-icon\">📞</span><span class=\"section-title\">Contact Information</span></div>' +
+            '<div class=\"section-body\">' +
+
+                // Email
+                '<div class=\"setting-row\">' +
+                    '<label for=\"school_email\">School Email</label>' +
+                    '<div class=\"setting-desc\">Main contact email shown on login, index, and outgoing emails.</div>' +
+                    '<input type=\"email\" id=\"school_email\" class=\"setting-input\" data-key=\"school_email\"' +
+                           ' value=\"' + escHtml(get('school_email')) + '\"' +
+                           ' placeholder=\"e.g. info@school.edu.ph\"' +
+                           ' oninput=\"markDirty()\">' +
+                '</div>' +
+
+                // Phone
+                '<div class=\"setting-row\">' +
+                    '<label for=\"school_phone\">Contact Number</label>' +
+                    '<div class=\"setting-desc\">Primary phone number shown on the login and index pages.</div>' +
+                    '<input type=\"text\" id=\"school_phone\" class=\"setting-input\" data-key=\"school_phone\"' +
+                           ' value=\"' + escHtml(get('school_phone')) + '\"' +
+                           ' placeholder=\"e.g. (032) 268-4746\"' +
+                           ' oninput=\"markDirty()\">' +
+                '</div>' +
+
+                // Registrar Phone
+                '<div class=\"setting-row\">' +
+                    '<label for=\"registrar_phone\">Registrar\'s Office Number</label>' +
+                    '<div class=\"setting-desc\">Shown in the login help box and on student-facing pages.</div>' +
+                    '<input type=\"text\" id=\"registrar_phone\" class=\"setting-input\" data-key=\"registrar_phone\"' +
+                           ' value=\"' + escHtml(get('registrar_phone')) + '\"' +
+                           ' placeholder=\"e.g. (032) 326-3677\"' +
+                           ' oninput=\"markDirty()\">' +
+                '</div>' +
+
+                // Website
+                '<div class=\"setting-row\">' +
+                    '<label for=\"school_website\">Official Website</label>' +
+                    '<div class=\"setting-desc\">Link shown in the footer of public pages.</div>' +
+                    '<input type=\"text\" id=\"school_website\" class=\"setting-input\" data-key=\"school_website\"' +
+                           ' value=\"' + escHtml(get('school_website')) + '\"' +
+                           ' placeholder=\"e.g. https://www.school.edu.ph\"' +
+                           ' oninput=\"markDirty()\">' +
+                '</div>' +
+                // Facebook
+                '<div class=\"setting-row\">' +
+                    '<label for=\"school_facebook\">Facebook Page URL</label>' +
+                    '<div class=\"setting-desc\">Link to the official Facebook page shown in Quick Links.</div>' +
+                    '<input type=\"text\" id=\"school_facebook\" class=\"setting-input\" data-key=\"school_facebook\"' +
+                           ' value=\"' + escHtml(get('school_facebook')) + '\"' +
+                           ' placeholder=\"e.g. https://www.facebook.com/YourSchool\"' +
+                           ' oninput=\"markDirty()\">' +
                 '</div>' +
 
             '</div>' +
@@ -643,14 +710,35 @@ loadSettings();
 })();
 </script>
 <script src="../js/pwa.js"></script>
-
-<nav class="mobile-bottom-nav">
-    <a href="dashboard.php" class="mobile-nav-item"><span class="mobile-nav-icon">📊</span>Dashboard</a>
-    <a href="users.php" class="mobile-nav-item"><span class="mobile-nav-icon">👥</span>Users</a>
-    <a href="courses.php" class="mobile-nav-item"><span class="mobile-nav-icon">🎓</span>Courses</a>
-    <a href="sections.php" class="mobile-nav-item"><span class="mobile-nav-icon">📁</span>Sections</a>
-    <a href="settings.php" class="mobile-nav-item active"><span class="mobile-nav-icon">⚙️</span>Settings</a>
-</nav>
 <script src="../js/session-monitor.js"></script>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <a href="dashboard.php" class="mobile-nav-item" data-page="dashboard">
+        <span class="mobile-nav-icon">📊</span><span>Home</span>
+      </a>
+      <a href="users.php" class="mobile-nav-item" data-page="users">
+        <span class="mobile-nav-icon">👥</span><span>Users</span>
+      </a>
+      <a href="sections.php" class="mobile-nav-item" data-page="sections">
+        <span class="mobile-nav-icon">📁</span><span>Sections</span>
+      </a>
+      <a href="announcements.php" class="mobile-nav-item" data-page="announcements">
+        <span class="mobile-nav-icon">📢</span><span>Notices</span>
+      </a>
+      <a href="account_settings.php" class="mobile-nav-item" data-page="account_settings">
+        <span class="mobile-nav-icon">👤</span><span>Profile</span>
+      </a>
+    </nav>
+
+    <script>
+    // Auto-highlight mobile bottom nav item
+    (function() {
+      var page = location.pathname.split('/').pop().replace('.php','');
+      document.querySelectorAll('.mobile-nav-item').forEach(function(el) {
+        if (el.dataset.page === page) el.classList.add('active');
+      });
+    })();
+    </script>
+
 </body>
 </html>

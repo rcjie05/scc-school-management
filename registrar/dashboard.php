@@ -95,6 +95,7 @@ $_avatar_conn->close();
                         <span>📚</span>
                         <span>School Year <?= htmlspecialchars($current_school_year) ?></span>
                     </div>
+                    <a href="profile.php" style="text-decoration:none;">
                     <div class="user-profile">
                         <div class="user-avatar" id="userAvatar"><?php
 $_avatar_url = !empty($_avatar_user['avatar_url']) ? htmlspecialchars(getAvatarUrl($_avatar_user['avatar_url'])) : null;

@@ -30,7 +30,7 @@
         .topbar-left { opacity: .8; }
 
         /* ── NAVBAR ── */
-        .navbar { background: white; border-bottom: 3px solid var(--red); display: flex; align-items: center; justify-content: space-between; padding: .6rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .navbar { background: white; border-bottom: 3px solid var(--gold); display: flex; align-items: center; justify-content: space-between; padding: .6rem 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.18); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: .85rem; text-decoration: none; }
         .nav-logo { width: 52px; height: 52px; border-radius: 50%; background: var(--red); border: 2.5px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 800; font-size: .78rem; color: var(--gold); text-align: center; line-height: 1.2; overflow: hidden; }
         .nav-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -41,7 +41,28 @@
         .nav-links a:hover { background: var(--red); color: white; }
         .nav-links a.active { background: var(--red); color: white; }
         .nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: .3rem; flex-direction: column; gap: 5px; }
-        .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--dark); border-radius: 2px; }
+        .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--dark); border-radius: 2px; transition: all .3s ease; }
+        .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        .nav-mobile-drawer {
+            display: none; flex-direction: column;
+            background: white; border-bottom: 3px solid var(--red);
+            box-shadow: 0 4px 12px rgba(0,0,0,.1);
+            padding: .5rem 1rem .75rem;
+            position: sticky; top: 65px; z-index: 99;
+        }
+        .nav-mobile-drawer.open { display: flex; }
+        .nav-mobile-drawer a {
+            color: var(--dark); text-decoration: none;
+            font-size: .85rem; font-weight: 700;
+            padding: .6rem .75rem; border-radius: 5px;
+            text-transform: uppercase; letter-spacing: .4px;
+            transition: background .2s, color .2s;
+        }
+        .nav-mobile-drawer a:hover,
+        .nav-mobile-drawer a.active { background: var(--red); color: white; }
+        .nav-mobile-drawer .nav-enroll { background: var(--gold) !important; color: var(--dark) !important; margin-top: .25rem; }
 
         /* ── MAIN ── */
         .main-wrap { flex: 1; display: flex; min-height: 0; }
@@ -62,7 +83,7 @@
 
         /* ── REGISTER SIDE ── */
         .reg-side { width: 480px; flex-shrink: 0; background: var(--cream); display: flex; flex-direction: column; overflow-y: auto; }
-        .reg-head { background: var(--red); padding: 1.5rem 2rem 1.2rem; text-align: center; border-bottom: 4px solid var(--gold); display: block; }
+        .reg-head { background: var(--red); padding: 1.5rem 2rem 1.2rem; text-align: center; border-bottom: 4px solid var(--gold); display: block; overflow: hidden; }
         .reg-logo { width: 64px; height: 64px; border-radius: 50%; background: white; border: 3px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 800; font-size: .9rem; color: var(--red); margin: 0 auto .7rem; text-align: center; line-height: 1.2; overflow: hidden; }
         .reg-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .reg-head h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: white; font-weight: 700; margin-bottom: .2rem; display: block; }
@@ -153,13 +174,13 @@
             .navbar { padding: .6rem 1rem; }
             .nav-links { display: none; }
             .nav-hamburger { display: flex; }
-            .topbar-left { display: none; }
+            .topbar { display: none; }
         }
         @media (max-width: 600px) {
             .topbar { padding: .35rem 1rem; }
-            .reg-head { padding: 1.2rem 1rem 1rem; }
+            .reg-head { padding: 2rem 1rem 1.2rem; }
             .reg-head h2 { font-size: 1rem; }
-            .reg-logo { width: 52px; height: 52px; }
+            .reg-logo { width: 56px; height: 56px; margin-bottom: .6rem; }
             .reg-body { padding: 1.2rem 1rem 2rem; }
 
             /* Progress bar — keep circles visible, shrink labels */
@@ -220,10 +241,18 @@
         <a href="login.html">Login</a>
         <a href="register.html" class="active">Register</a>
     </div>
-    <button class="nav-hamburger" aria-label="Menu">
+    <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
     </button>
 </nav>
+
+<div class="nav-mobile-drawer" id="navMobileDrawer">
+    <a href="index.html">Home</a>
+    <a href="index.html#about">About Us</a>
+    <a href="login.html">Login</a>
+    <a href="register.html" class="active">Register</a>
+    <a href="enrollment.html" class="nav-enroll">Enroll Now</a>
+</div>
 
 <div class="main-wrap">
 
@@ -611,6 +640,27 @@ loadCourses();
         }
     } catch (e) { /* silently keep defaults */ }
 })();
+</script>
+
+<script>
+    // Mobile nav toggle
+    (function() {
+        const hamburger = document.getElementById('navHamburger');
+        const drawer = document.getElementById('navMobileDrawer');
+        if (!hamburger || !drawer) return;
+        hamburger.addEventListener('click', () => {
+            const open = drawer.classList.toggle('open');
+            hamburger.classList.toggle('open', open);
+            hamburger.setAttribute('aria-expanded', open);
+        });
+        drawer.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => {
+                drawer.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            });
+        });
+    })();
 </script>
 </body>
 </html>

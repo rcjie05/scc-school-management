@@ -60,6 +60,7 @@ function safeLog($conn, $user_id, $action) {
 
 // ── Send OTP via Gmail SMTP ───────────────────────────────────────────────────
 function sendOtpEmail($toEmail, $toName, $otp) {
+    global $school_name;
     $subject = "Your Password Reset OTP - " . $school_name . "";
     $name    = htmlspecialchars($toName, ENT_QUOTES);
     $year    = date('Y');

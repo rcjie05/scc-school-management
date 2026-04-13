@@ -109,9 +109,13 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
     try {
         $mailer = new SMTPMailer();
-        return $mailer->send($toEmail, $toName, $subject, $body);
+        $sent = $mailer->send($toEmail, $toName, $subject, $body);
+        if (!$sent) {
+            error_log('OTP email: ResendMailer->send() returned false for ' . $toEmail . ' | RESEND_API_KEY set: ' . (getenv('RESEND_API_KEY') ? 'yes' : 'no'));
+        }
+        return $sent;
     } catch (Exception $e) {
-        error_log('Email send failed: ' . $e->getMessage());
+        error_log('OTP email exception: ' . $e->getMessage());
         return false;
     }
 }
@@ -200,18 +204,20 @@ if ($action === 'send_otp') {
     $ins->close();
 
     // Send email
+    $resend_key = getenv('RESEND_API_KEY');
+    if (empty($resend_key)) {
+        safeLog($conn, $user['id'], 'OTP email failed: RESEND_API_KEY not set');
+        $conn->close();
+        respond(false, 'Email service not configured. RESEND_API_KEY is missing in Railway Variables.');
+    }
+
     $sent = sendOtpEmail($email, $user['name'], $otp);
 
-    safeLog($conn, $user['id'], 'Password reset OTP requested');
+    safeLog($conn, $user['id'], 'Password reset OTP requested. Email sent: ' . ($sent ? 'yes' : 'no'));
     $conn->close();
 
     if (!$sent) {
-        // Email failed — still allow testing by returning OTP (localhost dev only)
-        $is_local = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1', '::1']);
-        if ($is_local) {
-            respond(true, 'Email not sent (check SMTP settings in config.php). Dev OTP shown below.', ['dev_otp' => $otp]);
-        }
-        respond(false, 'Failed to send OTP email. Please check SMTP settings or contact the administrator.');
+        respond(false, 'Failed to send OTP email. RESEND_API_KEY may be invalid or Resend rejected the request.');
     }
 
     respond(true, 'OTP sent successfully! Check your email inbox and spam folder.');

@@ -58,9 +58,6 @@ function safeLog($conn, $user_id, $action) {
     } catch (Exception $e) {}
 }
 
-// ── Load mailer early so SMTPMailer class is available ────────────────────────
-require_once __DIR__ . '/../smtp_mailer.php';
-
 // ── Send OTP via Email ────────────────────────────────────────────────────────
 function sendOtpEmail($toEmail, $toName, $otp) {
     global $school_name;
@@ -107,17 +104,48 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 </table>
 </body></html>";
 
-    try {
-        $mailer = new SMTPMailer();
-        $sent = $mailer->send($toEmail, $toName, $subject, $body);
-        if (!$sent) {
-            error_log('OTP email: ResendMailer->send() returned false for ' . $toEmail . ' | RESEND_API_KEY set: ' . (getenv('RESEND_API_KEY') ? 'yes' : 'no'));
-        }
-        return $sent;
-    } catch (Exception $e) {
-        error_log('OTP email exception: ' . $e->getMessage());
+    // Send directly via Resend API (bypass mailer class entirely)
+    $api_key = getenv('RESEND_API_KEY');
+    if (empty($api_key)) {
+        error_log('OTP email: RESEND_API_KEY not set');
         return false;
     }
+
+    $payload = json_encode([
+        'from'    => 'School Portal <onboarding@resend.dev>',
+        'to'      => [$toEmail],
+        'subject' => $subject,
+        'html'    => $body,
+    ]);
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $api_key,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_TIMEOUT => 15,
+    ]);
+
+    $response  = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err  = curl_error($ch);
+    curl_close($ch);
+
+    if ($curl_err) {
+        error_log('OTP email curl error: ' . $curl_err);
+        return false;
+    }
+
+    if ($http_code === 200 || $http_code === 201) {
+        return true;
+    }
+
+    error_log('OTP email Resend error HTTP ' . $http_code . ': ' . $response);
+    return false;
 }
 
 // ── Only accept POST ──────────────────────────────────────────────────────────

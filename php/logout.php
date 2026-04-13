@@ -9,11 +9,13 @@ $current_school_year = '----';
 if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
 // ──────────────────────────────────────────────────────────────────────
 
-// Log the logout before destroying session
+// Log the logout and clear session token before destroying session
 if (isLoggedIn()) {
     $conn = getDBConnection();
     if ($conn) {
         logAction($conn, $_SESSION['user_id'], 'User logged out');
+        // ── Clear session token so no ghost sessions remain ──
+        clearSessionToken($conn, $_SESSION['user_id']);
         $conn->close();
     }
 }

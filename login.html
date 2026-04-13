@@ -848,9 +848,10 @@
     const params = new URLSearchParams(window.location.search);
     const error  = params.get('error');
     const msgs   = {
-        'session_expired': '⏱️ Your session has expired. Please log in again.',
-        'deactivated':     '🚫 Your account has been deactivated.',
-        'unauthorized':    '🔒 You do not have permission to access that page.',
+        'session_expired':   '⏱️ Your session has expired. Please log in again.',
+        'deactivated':       '🚫 Your account has been deactivated.',
+        'unauthorized':      '🔒 You do not have permission to access that page.',
+        'session_displaced': '⚠️ You were logged out because this account was signed in from another device or browser.',
     };
     if (error && msgs[error]) {
         const div = document.createElement('div');

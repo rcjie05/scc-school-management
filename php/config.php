@@ -32,6 +32,7 @@ $current_school_year = '----';
 if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
 // ──────────────────────────────────────────────────────────────────────
 startSecureSession();
+autoCheckConcurrentSession(); // ← enforces 1-session-per-account on every page
 
 // ── Database Connection ───────────────────────────────────────────────────────
 function getDBConnection() {
@@ -64,7 +65,7 @@ function checkUserStatus() {
     if (!$conn) return false;
 
     $user_id = $_SESSION['user_id'];
-    $stmt = $conn->prepare("SELECT status, deactivated_until FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT status, deactivated_until, session_token FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -75,6 +76,17 @@ function checkUserStatus() {
     }
 
     $user = $result->fetch_assoc();
+
+    // ── Concurrent session check: kick out displaced sessions ──────────
+    // If DB has a token AND session has a token AND they don't match → kicked out
+    $db_token   = $user['session_token'] ?? null;
+    $sess_token = $_SESSION['session_token'] ?? null;
+    if ($db_token !== null && $sess_token !== null && !hash_equals($db_token, $sess_token)) {
+        $conn->close();
+        destroySession();
+        header('Location: ' . BASE_URL . '/login.html?error=session_displaced');
+        exit();
+    }
 
     if ($user['status'] === 'inactive') {
         if ($user['deactivated_until']) {

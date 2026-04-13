@@ -935,7 +935,9 @@ CREATE TABLE `users` (
   `profile_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `archived_at` datetime DEFAULT NULL
+  `archived_at` datetime DEFAULT NULL,
+  `session_token` varchar(64) DEFAULT NULL,
+  `session_started_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

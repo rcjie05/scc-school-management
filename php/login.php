@@ -81,7 +81,7 @@ if ($user['status'] === 'rejected') {
 
 // ── Login success — initialize secure session ─────────────────────────────────
 clearLoginRateLimit($email);
-initializeSession($user);
+initializeSession($user, $conn);
 
 // Log the login with IP
 logAction($conn, $user['id'], 'User logged in from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));

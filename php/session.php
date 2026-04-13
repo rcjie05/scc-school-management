@@ -24,6 +24,57 @@ function startSecureSession() {
     session_start();
 }
 
+/**
+ * Called automatically at the bottom of config.php after session starts.
+ * Checks the session token on EVERY page load — even pages that don't
+ * explicitly call requireLogin() — so concurrent session detection is
+ * guaranteed to fire regardless of which page the user is on.
+ */
+function autoCheckConcurrentSession() {
+    // Only check if user appears to be logged in
+    if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) return;
+
+    // Skip API endpoints — they handle their own auth and return JSON
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (strpos($uri, '/api/') !== false) return;
+
+    $conn = null;
+    // Use a simple inline connection to avoid circular dependency with config.php
+    $host = defined('DB_HOST') ? DB_HOST : 'localhost';
+    $port = defined('DB_PORT') ? (int)DB_PORT : 3306;
+    $user = defined('DB_USER') ? DB_USER : 'root';
+    $pass = defined('DB_PASS') ? DB_PASS : '';
+    $db   = defined('DB_NAME') ? DB_NAME : 'school_management';
+
+    $conn = new mysqli($host, $user, $pass, $db, $port);
+    if ($conn->connect_error) return;
+
+    $userId = (int)$_SESSION['user_id'];
+    $stmt = $conn->prepare("SELECT session_token FROM users WHERE id = ?");
+    if (!$stmt) { $conn->close(); return; }
+
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+
+    if (!$row) return; // user not found
+
+    $db_token   = $row['session_token'] ?? null;
+    $sess_token = $_SESSION['session_token'];
+
+    // Token mismatch → another login happened → kick this session out
+    if ($db_token !== null && !hash_equals($db_token, $sess_token)) {
+        session_unset();
+        session_destroy();
+        $baseUrl = defined('BASE_URL') ? BASE_URL : '';
+        header('Location: ' . $baseUrl . '/login.html?error=session_displaced');
+        exit();
+    }
+}
+
 function validateSession() {
     if (!isset($_SESSION['user_id'])) return false;
 
@@ -41,7 +92,7 @@ function validateSession() {
     return true;
 }
 
-function initializeSession($user) {
+function initializeSession($user, $conn = null) {
     session_regenerate_id(true);
     $_SESSION['user_id']       = $user['id'];
     $_SESSION['name']          = $user['name'];
@@ -50,6 +101,54 @@ function initializeSession($user) {
     $_SESSION['course']        = $user['course'] ?? '';
     $_SESSION['last_activity'] = time();
     $_SESSION['created_at']    = time();
+
+    // ── Concurrent session limit: invalidate any previous session ──
+    if ($conn) {
+        $token = generateSessionToken();
+        $_SESSION['session_token'] = $token;
+        writeSessionToken($conn, $user['id'], $token);
+    }
+}
+
+function generateSessionToken() {
+    return bin2hex(random_bytes(32)); // 64-char hex token
+}
+
+function writeSessionToken($conn, $userId, $token) {
+    $stmt = $conn->prepare(
+        "UPDATE users SET session_token = ?, session_started_at = NOW() WHERE id = ?"
+    );
+    if (!$stmt) {
+        // Column likely doesn't exist yet - log and skip silently
+        error_log("[SESSION] writeSessionToken failed (column missing?): " . $conn->error);
+        return;
+    }
+    $stmt->bind_param("si", $token, $userId);
+    if (!$stmt->execute()) {
+        error_log("[SESSION] writeSessionToken execute failed: " . $stmt->error);
+    }
+    $stmt->close();
+}
+
+function validateSessionToken($conn, $userId, $token) {
+    if (empty($token)) return false;
+    $stmt = $conn->prepare("SELECT session_token FROM users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    if (!$row) return false;
+    return hash_equals((string)$row['session_token'], (string)$token);
+}
+
+function clearSessionToken($conn, $userId) {
+    $stmt = $conn->prepare(
+        "UPDATE users SET session_token = NULL, session_started_at = NULL WHERE id = ?"
+    );
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $stmt->close();
 }
 
 function destroySession() {

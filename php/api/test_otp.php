@@ -1,8 +1,6 @@
 <?php
 /**
- * SMTP + Resend Debug Tool
- * Visit: https://your-railway-url/php/api/test_otp.php
- * Send test: https://your-railway-url/php/api/test_otp.php?email=you@gmail.com
+ * Resend Debug Tool — verbose version
  * DELETE this file after confirming emails work.
  */
 ini_set('display_errors', 1);
@@ -10,33 +8,60 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../resend_mailer.php';
 
 $result = [];
 
-// ── 1. Env variables ──────────────────────────────────────────────────
 $result['env'] = [
-    'SMTP_USERNAME'     => getenv('SMTP_USERNAME')     ?: '❌ NOT SET',
-    'SMTP_APP_PASSWORD' => getenv('SMTP_APP_PASSWORD') ? '✅ SET (' . strlen(getenv('SMTP_APP_PASSWORD')) . ' chars)' : '❌ NOT SET',
-    'RESEND_API_KEY'    => getenv('RESEND_API_KEY')    ? '✅ SET (' . strlen(getenv('RESEND_API_KEY')) . ' chars)' : '❌ NOT SET — add this in Railway Variables!',
+    'RESEND_API_KEY' => getenv('RESEND_API_KEY') ? '✅ SET (' . strlen(getenv('RESEND_API_KEY')) . ' chars)' : '❌ NOT SET',
+    'SMTP_USERNAME'  => getenv('SMTP_USERNAME') ?: '❌ NOT SET',
 ];
 
-// ── 2. Resend send test ───────────────────────────────────────────────
 $test_email = trim($_GET['email'] ?? '');
+$from_email = getenv('SMTP_USERNAME') ?: 'onboarding@resend.dev';
+$from_name  = 'School Portal';
+
+// Use Resend's default test sender if SMTP_USERNAME not set
+$from = (getenv('SMTP_USERNAME') && strpos(getenv('SMTP_USERNAME'), '@') !== false)
+    ? $from_name . ' <' . getenv('SMTP_USERNAME') . '>'
+    : 'School Portal <onboarding@resend.dev>';
+
+$result['sending_from'] = $from;
+
 if ($test_email && filter_var($test_email, FILTER_VALIDATE_EMAIL)) {
-    try {
-        $mailer = new ResendMailer();
-        $sent = $mailer->send(
-            $test_email,
-            'Test User',
-            'Resend Test from Railway',
-            '<h2>✅ It works!</h2><p>Resend is configured correctly on Railway.</p>'
-        );
-        $result['send_test'] = $sent
-            ? "✅ Email sent to $test_email — check your inbox!"
-            : "❌ send() returned false — check RESEND_API_KEY in Railway Variables";
-    } catch (Exception $e) {
-        $result['send_test'] = "❌ Exception: " . $e->getMessage();
+    $api_key = getenv('RESEND_API_KEY');
+
+    $payload = json_encode([
+        'from'    => $from,
+        'to'      => [$test_email],
+        'subject' => 'Resend Test from Railway',
+        'html'    => '<h2>It works!</h2><p>Resend is working on Railway.</p>',
+    ]);
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $api_key,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_TIMEOUT => 15,
+    ]);
+
+    $response  = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err  = curl_error($ch);
+    curl_close($ch);
+
+    $result['http_code']      = $http_code;
+    $result['resend_response'] = json_decode($response, true) ?: $response;
+    $result['curl_error']     = $curl_err ?: null;
+
+    if ($http_code === 200 || $http_code === 201) {
+        $result['send_test'] = "✅ Email sent to $test_email — check your inbox!";
+    } else {
+        $result['send_test'] = "❌ Failed — see resend_response above for the exact error";
     }
 } else {
     $result['send_test'] = 'ℹ️ Add ?email=you@gmail.com to the URL to send a real test email';

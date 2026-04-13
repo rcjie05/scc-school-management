@@ -203,7 +203,7 @@ define('SMTP_HOST',       'smtp.gmail.com');
 define('SMTP_PORT',       587);
 define('SMTP_ENCRYPTION', 'tls');
 define('SMTP_USERNAME',   getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
-define('SMTP_PASSWORD',   getenv('SMTP_APP_PASSWORD') ?: getenv('SMTP_PASSWORD') ?: 'REPLACE_WITH_YOUR_APP_PASSWORD');
+define('SMTP_PASSWORD',   getenv('SMTP_APP_PASSWORD') ?: getenv('SMTP_PASSWORD') ?: 'ioqsoktcvwtornmi');
 define('SMTP_FROM_EMAIL', getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
 // SMTP_FROM_NAME is set dynamically — see smtp config
 define('SMTP_FROM_NAME', (function(){ $c=getDBConnection(); $r=$c?$c->query("SELECT setting_value FROM system_settings WHERE setting_key='school_name' LIMIT 1"):false; $n=$r?$r->fetch_assoc()['setting_value']??"School Portal":"School Portal"; $c&&$c->close(); return $n; })());

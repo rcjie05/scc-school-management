@@ -73,11 +73,11 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
   <tr><td style='background:#8b0000;padding:30px 32px;text-align:center;border-bottom:4px solid #c8a951;'>
     <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>" . $school_name . "</p>
-    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>My School</p>
+    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>" . $school_name . "</p>
   </td></tr>
 
   <tr><td style='padding:38px 40px;'>
-    <p style='margin:0 0 10px;font-size:16px;color:#222;'>Hello, <strong>{$name}</strong> 👋</p>
+    <p style='margin:0 0 10px;font-size:16px;color:#222;'>Hello, <strong>" . $name . "</strong> 👋</p>
     <p style='margin:0 0 28px;font-size:14px;color:#555;line-height:1.7;'>
       We received a request to reset your password.<br>
       Use the <strong>6-digit OTP</strong> below to continue. It expires in <strong>10 minutes</strong>.
@@ -85,7 +85,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
     <div style='background:#fdf8f0;border:2px solid #c8a951;border-radius:12px;padding:28px;text-align:center;margin-bottom:28px;'>
       <p style='margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8b0000;'>Your OTP Code</p>
-      <p style='margin:0;font-size:44px;font-weight:900;letter-spacing:12px;color:#8b0000;font-family:Courier New,monospace;'>{$otp}</p>
+      <p style='margin:0;font-size:44px;font-weight:900;letter-spacing:12px;color:#8b0000;font-family:Courier New,monospace;'>" . $otp . "</p>
     </div>
 
     <p style='margin:0 0 6px;font-size:13px;color:#999;'>⚠️ Do not share this code with anyone.</p>
@@ -96,7 +96,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
   </td></tr>
 
   <tr><td style='background:#f8f8f8;padding:16px 40px;border-top:1px solid #eee;text-align:center;'>
-    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; {$year} " . $school_name . ", Inc. &middot; All rights reserved</p>
+    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; " . $year . " " . $school_name . ", Inc. &middot; All rights reserved</p>
   </td></tr>
 
 </table>

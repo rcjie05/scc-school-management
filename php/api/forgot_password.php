@@ -58,7 +58,10 @@ function safeLog($conn, $user_id, $action) {
     } catch (Exception $e) {}
 }
 
-// ── Send OTP via Gmail SMTP ───────────────────────────────────────────────────
+// ── Load mailer early so SMTPMailer class is available ────────────────────────
+require_once __DIR__ . '/../smtp_mailer.php';
+
+// ── Send OTP via Email ────────────────────────────────────────────────────────
 function sendOtpEmail($toEmail, $toName, $otp) {
     global $school_name;
     $subject = "Your Password Reset OTP - " . $school_name . "";
@@ -197,7 +200,6 @@ if ($action === 'send_otp') {
     $ins->close();
 
     // Send email
-    require_once __DIR__ . '/../smtp_mailer.php';
     $sent = sendOtpEmail($email, $user['name'], $otp);
 
     safeLog($conn, $user['id'], 'Password reset OTP requested');

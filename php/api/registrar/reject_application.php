@@ -33,22 +33,75 @@ $stmt = $conn->prepare("UPDATE users SET status = 'rejected' WHERE id = ? AND ro
 $stmt->bind_param("i", $application_id);
 
 if ($stmt->execute()) {
-    // Create notification for student
-    $message = 'Your enrollment application has been rejected.';
+    // Get student details for notification + email
+    $stmt2 = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
+    $stmt2->bind_param("i", $application_id);
+    $stmt2->execute();
+    $student = $stmt2->get_result()->fetch_assoc();
+    $stmt2->close();
+
+    $notif_message = 'Your enrollment application has been rejected.';
     if (!empty($reason)) {
-        $message .= ' Reason: ' . $reason;
+        $notif_message .= ' Reason: ' . $reason;
     }
-    
+
     createNotification(
-        $conn, 
-        $application_id, 
-        'Application Rejected', 
-        $message
+        $conn,
+        $application_id,
+        'Application Rejected',
+        $notif_message
     );
-    
+
+    // ── Send rejection email ──────────────────────────────────────────
+    if ($student && !empty($student['email'])) {
+        require_once '../../smtp_mailer.php';
+        $year    = date('Y');
+        $name    = htmlspecialchars($student['name'], ENT_QUOTES);
+        $reason_html = !empty($reason)
+            ? "<div style='background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:14px 18px;margin:16px 0;font-size:13px;color:#991b1b;'><strong>Reason:</strong> " . htmlspecialchars($reason, ENT_QUOTES) . "</div>"
+            : "";
+        $subject = "Application Status Update — " . $school_name;
+        $body    = "<!DOCTYPE html><html><head><meta charset='UTF-8'></head>
+<body style='margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;'>
+<table width='100%' cellpadding='0' cellspacing='0' style='background:#f5f5f5;padding:30px 0;'>
+<tr><td align='center'>
+<table width='500' cellpadding='0' cellspacing='0' style='background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12);'>
+  <tr><td style='background:#8b0000;padding:28px 32px;text-align:center;border-bottom:4px solid #c8a951;'>
+    <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>{$school_name}</p>
+    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>Enrollment Notification</p>
+  </td></tr>
+  <tr><td style='padding:36px 40px;'>
+    <p style='margin:0 0 10px;font-size:16px;color:#222;'>Hello, <strong>{$name}</strong>,</p>
+    <p style='margin:0 0 20px;font-size:14px;color:#555;line-height:1.7;'>
+      We regret to inform you that your enrollment application has been <strong style='color:#dc2626;'>rejected</strong>.
+    </p>
+    <div style='background:#fef2f2;border:2px solid #dc2626;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;'>
+      <p style='margin:0 0 6px;font-size:24px;'>❌</p>
+      <p style='margin:0;font-size:16px;font-weight:700;color:#dc2626;'>Application Not Approved</p>
+    </div>
+    {$reason_html}
+    <p style='margin:16px 0 0;font-size:13px;color:#555;line-height:1.7;'>
+      If you believe this is an error or would like to appeal, please visit the Registrar's Office or contact us directly.
+    </p>
+  </td></tr>
+  <tr><td style='background:#f8f8f8;padding:16px 40px;border-top:1px solid #eee;text-align:center;'>
+    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; {$year} {$school_name}. All rights reserved.</p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>";
+        try {
+            $mailer = new SMTPMailer();
+            $mailer->send($student['email'], $student['name'], $subject, $body);
+        } catch (Exception $e) {
+            error_log('Rejection email failed: ' . $e->getMessage());
+        }
+    }
+
     // Log action
     logAction($conn, $_SESSION['user_id'], 'Rejected student application', 'users', $application_id);
-    
+
     echo json_encode([
         'success' => true,
         'message' => 'Application rejected'

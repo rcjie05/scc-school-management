@@ -93,9 +93,12 @@ if ($stmt->execute()) {
 </body></html>";
         try {
             $mailer = new SMTPMailer();
-            $mailer->send($student['email'], $student['name'], $subject, $body);
+            $sent = $mailer->send($student['email'], $student['name'], $subject, $body);
+            if (!$sent) {
+                error_log('Rejection email failed silently. SMTP_USERNAME=' . SMTP_USERNAME . ' SMTP_HOST=' . SMTP_HOST . ' SMTP_PORT=' . SMTP_PORT);
+            }
         } catch (Exception $e) {
-            error_log('Rejection email failed: ' . $e->getMessage());
+            error_log('Rejection email failed: ' . $e->getMessage() . ' | SMTP_USERNAME=' . SMTP_USERNAME . ' SMTP_HOST=' . SMTP_HOST . ' SMTP_PORT=' . SMTP_PORT);
         }
     }
 

@@ -12,8 +12,10 @@ class ResendMailer {
 
     public function __construct() {
         $this->api_key   = getenv('RESEND_API_KEY') ?: '';
-        $this->from_email = defined('SMTP_FROM_EMAIL') ? SMTP_FROM_EMAIL : getenv('SMTP_USERNAME');
-        $this->from_name  = defined('SMTP_FROM_NAME')  ? SMTP_FROM_NAME  : 'School Portal';
+        // Always use onboarding@resend.dev — Railway blocks SMTP and Resend
+        // rejects unverified domains like gmail.com as sender.
+        $this->from_email = 'onboarding@resend.dev';
+        $this->from_name  = defined('SMTP_FROM_NAME') ? SMTP_FROM_NAME : 'School Portal';
     }
 
     public function send($to_email, $to_name, $subject, $body) {

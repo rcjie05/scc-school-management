@@ -131,6 +131,9 @@ if (empty($action)) respond(false, 'No action specified.');
 $conn = getDBConnection();
 if (!$conn) respond(false, 'Database connection failed. Please contact the administrator.');
 
+// Force MySQL session timezone to UTC to avoid timezone mismatch on Railway
+$conn->query("SET time_zone = '+00:00'");
+
 ensureOtpTable($conn);
 
 // =============================================================================

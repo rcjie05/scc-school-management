@@ -84,9 +84,21 @@
         .login-head h2 { font-family:'Playfair Display',serif; font-size:1.05rem; color:white; font-weight:700; margin-bottom:.2rem; }
         .login-head p { font-size:.72rem; color:rgba(255,255,255,0.65); }
         .login-body { flex:1; padding:1.75rem 2rem; }
-        #alert-container .alert { padding:.85rem 1rem; border-radius:8px; font-size:.83rem; margin-bottom:1.25rem; }
-        #alert-container .alert-error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+        #alert-container .alert {
+            display: flex; align-items: flex-start; gap: .75rem;
+            padding: .9rem 1rem; border-radius: 10px;
+            font-size: .84rem; margin-bottom: 1.25rem;
+            animation: alertSlideIn .25s ease;
+        }
+        @keyframes alertSlideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+        #alert-container .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+        #alert-container .alert-body { flex: 1; }
+        #alert-container .alert-title { font-weight: 700; font-size: .83rem; margin-bottom: .15rem; }
+        #alert-container .alert-msg   { font-size: .8rem; opacity: .85; line-height: 1.5; }
+        #alert-container .alert-error   { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+        #alert-container .alert-warning { background:#fef3c7; color:#92400e; border:1px solid #fbbf24; }
         #alert-container .alert-success { background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; }
+        #alert-container .alert-info    { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; }
         .form-group { margin-bottom:1.15rem; }
         .form-label { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--dark); margin-bottom:.4rem; }
         .form-input { width:100%; padding:.75rem 1rem; border:1.5px solid var(--border); border-radius:8px; font-family:'Lato',sans-serif; font-size:.9rem; color:var(--dark); background:white; transition:border-color .2s,box-shadow .2s; }
@@ -472,7 +484,7 @@
         const error = urlParams.get('error');
         const alertContainer = document.getElementById('alert-container');
         if (error === 'deactivated') {
-            alertContainer.innerHTML = '<div class="alert alert-error">⚠️ Your account has been deactivated. Please contact the administrator for more information.</div>';
+            alertContainer.innerHTML = '<div class="alert alert-error"><span class="alert-icon">🚫</span><div class="alert-body"><div class="alert-title">Account Deactivated</div><div class="alert-msg">Your account has been deactivated. Please contact the administrator for more information.</div></div></div>';
         }
     });
 
@@ -492,7 +504,7 @@
             });
             const result = await response.json();
             if (result.success) {
-                alertContainer.innerHTML = '<div class="alert alert-success">✓ Login successful! Redirecting...</div>';
+                alertContainer.innerHTML = '<div class="alert alert-success"><span class="alert-icon">✅</span><div class="alert-body"><div class="alert-title">Login Successful</div><div class="alert-msg">Welcome back! Redirecting you now…</div></div></div>';
                 // Show loading screen
                 const ls = document.getElementById('loading-screen');
                 ls.classList.add('show');
@@ -503,12 +515,12 @@
                 bar.style.animation = '';
                 setTimeout(() => { window.location.href = result.redirect; }, 1800);
             } else {
-                alertContainer.innerHTML = `<div class="alert alert-error">⚠️ ${result.message}</div>`;
+                alertContainer.innerHTML = `<div class="alert alert-error"><span class="alert-icon">⚠️</span><div class="alert-body"><div class="alert-title">Login Failed</div><div class="alert-msg">${result.message}</div></div></div>`;
                 btn.textContent = 'Login to Portal';
                 btn.disabled = false;
             }
         } catch (err) {
-            alertContainer.innerHTML = '<div class="alert alert-error">⚠️ An error occurred. Please try again.</div>';
+            alertContainer.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div class="alert-body"><div class="alert-title">Connection Error</div><div class="alert-msg">An error occurred. Please check your connection and try again.</div></div></div>';
             btn.textContent = 'Login to Portal';
             btn.disabled = false;
         }
@@ -863,17 +875,18 @@
     const params = new URLSearchParams(window.location.search);
     const error  = params.get('error');
     const msgs   = {
-        'session_expired':   '⏱️ Your session has expired. Please log in again.',
-        'deactivated':       '🚫 Your account has been deactivated.',
-        'unauthorized':      '🔒 You do not have permission to access that page.',
-        'session_displaced': '⚠️ You were logged out because this account was signed in from another device or browser.',
+        'session_expired':   { type: 'warning', icon: '⏱️', title: 'Session Expired',     msg: 'Your session has timed out. Please log in again to continue.' },
+        'deactivated':       { type: 'error',   icon: '🚫', title: 'Account Deactivated', msg: 'Your account has been deactivated. Contact the administrator for assistance.' },
+        'unauthorized':      { type: 'error',   icon: '🔒', title: 'Access Denied',       msg: 'You do not have permission to access that page.' },
+        'session_displaced': { type: 'info',    icon: '📱', title: 'Signed Out Remotely', msg: 'You were logged out because this account was signed in from another device or browser.' },
     };
     if (error && msgs[error]) {
+        const m   = msgs[error];
         const div = document.createElement('div');
-        div.style.cssText = 'background:#fef3c7;color:#92400e;border:1px solid #fbbf24;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;font-weight:600;text-align:center;';
-        div.textContent = msgs[error];
-        const form = document.querySelector('.login-form, form, .login-box');
-        if (form) form.prepend(div);
+        div.className = `alert alert-${m.type}`;
+        div.innerHTML = `<span class="alert-icon">${m.icon}</span><div class="alert-body"><div class="alert-title">${m.title}</div><div class="alert-msg">${m.msg}</div></div>`;
+        const container = document.getElementById('alert-container');
+        if (container) container.prepend(div);
         else document.body.prepend(div);
     }
 })();

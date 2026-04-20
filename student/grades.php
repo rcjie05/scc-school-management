@@ -51,7 +51,6 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
                     <div class="nav-section-title">Support</div>
                     <a href="announcements.php" class="nav-item"><span class="nav-icon">📢</span><span>Announcements</span></a>
                     <a href="feedback.php" class="nav-item"><span class="nav-icon">💬</span><span>Feedback</span></a>
-                    <a href="reenrollment.php" class="nav-item"><span class="nav-icon">🔁</span><span>Re-enrollment</span></a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Account</div>
@@ -289,7 +288,6 @@ mark.gs-hl { background: rgba(61,107,159,.15); color: var(--primary-purple, #3D6
         { title: 'Announcements',    url: 'announcements.php',  icon: '📢', sub: 'School announcements' },
         { title: 'Feedback',         url: 'feedback.php',       icon: '💬', sub: 'Submit feedback' },
         { title: 'Profile',          url: 'profile.php',        icon: '👤', sub: 'My account & settings' },
-        { title: 'Re-enrollment',    url: 'reenrollment.php',   icon: '🎓', sub: 'Enroll for next school year' },
         { title: 'Chatbot',          url: 'chatbot.php',        icon: '🤖', sub: 'AI assistant' },
     ];
 

@@ -1,98 +1,39 @@
 <?php
-/**
- * Gmail API Debug Tool — DELETE after confirming emails work
- */
+// Quick test — visit this URL to confirm PHP is working
+// http://localhost/school-mgmt-fixed/php/api/test_otp.php
+// DELETE this file after confirming it works.
+
 ini_set('display_errors', 1);
-error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../config.php';
 
-$result = [];
-$result['env'] = [
-    'GMAIL_CLIENT_ID'     => getenv('GMAIL_CLIENT_ID')     ? '✅ SET' : '❌ NOT SET',
-    'GMAIL_CLIENT_SECRET' => getenv('GMAIL_CLIENT_SECRET') ? '✅ SET' : '❌ NOT SET',
-    'GMAIL_REFRESH_TOKEN' => getenv('GMAIL_REFRESH_TOKEN') ? '✅ SET (' . strlen(getenv('GMAIL_REFRESH_TOKEN')) . ' chars)' : '❌ NOT SET',
-    'GMAIL_FROM'          => getenv('GMAIL_FROM') ?: '❌ NOT SET',
+// ── Dynamic school name & school year ────────────────────────────────
+$_sn_conn = getDBConnection();
+$_sn_res  = $_sn_conn ? $_sn_conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('school_name','current_school_year')") : false;
+$school_name = 'My School';
+$current_school_year = '----';
+if ($_sn_res) { while ($_sn_row = $_sn_res->fetch_assoc()) { if ($_sn_row['setting_key']==='school_name') $school_name=$_sn_row['setting_value']; if ($_sn_row['setting_key']==='current_school_year') $current_school_year=$_sn_row['setting_value']; } }
+// ──────────────────────────────────────────────────────────────────────
+
+$conn = getDBConnection();
+$result = [
+    'php_ok'    => true,
+    'php_ver'   => PHP_VERSION,
+    'db_ok'     => ($conn !== null),
+    'db_error'  => $conn ? null : 'Connection failed',
 ];
 
-$client_id     = getenv('GMAIL_CLIENT_ID');
-$client_secret = getenv('GMAIL_CLIENT_SECRET');
-$refresh_token = getenv('GMAIL_REFRESH_TOKEN');
-$from_email    = getenv('GMAIL_FROM');
+if ($conn) {
+    // Check if OTP table exists
+    $r = $conn->query("SHOW TABLES LIKE 'password_reset_otps'");
+    $result['otp_table_exists'] = ($r && $r->num_rows > 0);
 
-// Step 1: Get access token
-$ch = curl_init('https://oauth2.googleapis.com/token');
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => http_build_query([
-        'client_id'     => $client_id,
-        'client_secret' => $client_secret,
-        'refresh_token' => $refresh_token,
-        'grant_type'    => 'refresh_token',
-    ]),
-    CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
-    CURLOPT_TIMEOUT    => 15,
-]);
-$token_response  = curl_exec($ch);
-$token_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$token_curl_err  = curl_error($ch);
-curl_close($ch);
+    // Check users table
+    $r2 = $conn->query("SELECT COUNT(*) AS cnt FROM users");
+    $result['users_count'] = $r2 ? $r2->fetch_assoc()['cnt'] : 'error';
 
-$result['step1_get_token'] = [
-    'http_code' => $token_http_code,
-    'curl_error' => $token_curl_err ?: null,
-    'response' => json_decode($token_response, true) ?: $token_response,
-];
-
-$token_data   = json_decode($token_response, true);
-$access_token = $token_data['access_token'] ?? null;
-
-if (!$access_token) {
-    $result['conclusion'] = '❌ Could not get access token — see step1_get_token for error';
-    echo json_encode($result, JSON_PRETTY_PRINT);
-    exit;
+    $conn->close();
 }
-
-$result['step1_get_token']['access_token'] = '✅ Got access token';
-
-// Step 2: Send email
-$test_email = trim($_GET['email'] ?? 'godzdemonz05@gmail.com');
-$message = "From: School Portal <$from_email>\r\n"
-         . "To: $test_email\r\n"
-         . "Subject: Gmail API Test\r\n"
-         . "MIME-Version: 1.0\r\n"
-         . "Content-Type: text/html; charset=UTF-8\r\n"
-         . "\r\n"
-         . "<h2>Gmail API is working!</h2>";
-
-$encoded = rtrim(strtr(base64_encode($message), '+/', '-_'), '=');
-
-$ch2 = curl_init('https://gmail.googleapis.com/gmail/v1/users/me/messages/send');
-curl_setopt_array($ch2, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => json_encode(['raw' => $encoded]),
-    CURLOPT_HTTPHEADER     => [
-        'Authorization: Bearer ' . $access_token,
-        'Content-Type: application/json',
-    ],
-    CURLOPT_TIMEOUT => 15,
-]);
-$send_response  = curl_exec($ch2);
-$send_http_code = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-$send_curl_err  = curl_error($ch2);
-curl_close($ch2);
-
-$result['step2_send_email'] = [
-    'http_code'  => $send_http_code,
-    'curl_error' => $send_curl_err ?: null,
-    'response'   => json_decode($send_response, true) ?: $send_response,
-];
-
-$result['conclusion'] = ($send_http_code === 200 || $send_http_code === 201)
-    ? "✅ Email sent to $test_email!"
-    : "❌ Failed — see step2_send_email for exact error";
 
 echo json_encode($result, JSON_PRETTY_PRINT);

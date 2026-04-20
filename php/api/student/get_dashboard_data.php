@@ -202,7 +202,19 @@ if ($sched_stmt) {
     $sched_stmt->close();
 }
 
-// ── 5. Announcements ─────────────────────────────────────────────────
+// ── 5. Enrollment status ─────────────────────────────────────────────
+$enrollment_open = false;
+$current_semester = '';
+$res = $conn->query("SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ('registration_open','current_semester','current_school_year')");
+if ($res) {
+    while ($row = $res->fetch_assoc()) {
+        if ($row['setting_key'] === 'registration_open')  $enrollment_open    = $row['setting_value'] === '1';
+        if ($row['setting_key'] === 'current_semester')   $current_semester   = $row['setting_value'];
+        if ($row['setting_key'] === 'current_school_year') $current_school_year = $row['setting_value'];
+    }
+}
+
+// ── 6. Announcements ─────────────────────────────────────────────────
 $announcements = [];
 $stmt = $conn->prepare("
     SELECT title, content, DATE_FORMAT(created_at, '%M %d, %Y') AS date
@@ -236,8 +248,11 @@ echo json_encode([
         'total_units'       => $total_units,
         'gpa'               => $gpa,
     ],
-    'today'         => $today,
-    'schedule'      => $today_schedule,
-    'all_schedule'  => $all_schedule,
-    'announcements' => $announcements,
+    'today'            => $today,
+    'schedule'         => $today_schedule,
+    'all_schedule'     => $all_schedule,
+    'announcements'    => $announcements,
+    'enrollment_open'  => $enrollment_open,
+    'current_semester' => $current_semester,
+    'school_year'      => $current_school_year,
 ], JSON_UNESCAPED_UNICODE);

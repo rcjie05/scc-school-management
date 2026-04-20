@@ -1,10 +1,5 @@
 <?php
-// ── Environment ───────────────────────────────────────────────────────────────
-// LOCAL TESTING ONLY — remove before pushing to GitHub!
-// putenv('GROQ_API_KEY=your_key_here');
-
-// Database configuration
-// Supports Railway.app env variables and XAMPP local fallback
+putenv('GROQ_API_KEY=');
 define('DB_HOST', getenv('MYSQLHOST')     ?: getenv('DB_HOST') ?: 'localhost');
 define('DB_PORT', getenv('MYSQLPORT')     ?: getenv('DB_PORT') ?: '3306');
 define('DB_USER', getenv('MYSQLUSER')     ?: getenv('DB_USER') ?: 'root');
@@ -202,8 +197,14 @@ function getSystemSetting($conn, $key) {
 define('SMTP_HOST',       'smtp.gmail.com');
 define('SMTP_PORT',       587);
 define('SMTP_ENCRYPTION', 'tls');
-define('SMTP_USERNAME',   getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
-define('SMTP_PASSWORD',   getenv('SMTP_APP_PASSWORD') ?: getenv('SMTP_PASSWORD') ?: 'REPLACE_WITH_YOUR_APP_PASSWORD');
-define('SMTP_FROM_EMAIL', getenv('SMTP_USERNAME') ?: 'godzdemonz05@gmail.com');
+define('SMTP_USERNAME',   getenv('SMTP_USERNAME') ?: 'schoolinfos.me@gmail.com');
+define('SMTP_PASSWORD',   getenv('SMTP_APP_PASSWORD') ?: 'REPLACE_WITH_YOUR_GMAIL_APP_PASSWORD');
+define('SMTP_FROM_EMAIL', getenv('SMTP_USERNAME') ?: 'schoolinfos.me@gmail.com');
+// ── HOW TO GET YOUR GMAIL APP PASSWORD ────────────────────────────────────────
+// 1. Go to myaccount.google.com
+// 2. Security → Enable 2-Step Verification first
+// 3. Search "App passwords" → Select Mail → Other → type "XAMPP"
+// 4. Copy the 16-character password → paste it above replacing REPLACE_WITH_YOUR_GMAIL_APP_PASSWORD
+// ─────────────────────────────────────────────────────────────────────────────
 // SMTP_FROM_NAME is set dynamically — see smtp config
 define('SMTP_FROM_NAME', (function(){ $c=getDBConnection(); $r=$c?$c->query("SELECT setting_value FROM system_settings WHERE setting_key='school_name' LIMIT 1"):false; $n=$r?$r->fetch_assoc()['setting_value']??"School Portal":"School Portal"; $c&&$c->close(); return $n; })());

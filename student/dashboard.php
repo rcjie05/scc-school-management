@@ -241,7 +241,6 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
                     <div class="nav-section-title">Support</div>
                     <a href="announcements.php" class="nav-item"><span class="nav-icon">📢</span><span>Announcements</span></a>
                     <a href="feedback.php" class="nav-item"><span class="nav-icon">💬</span><span>Feedback</span></a>
-                    <a href="reenrollment.php" class="nav-item"><span class="nav-icon">🔁</span><span>Re-enrollment</span></a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Account</div>
@@ -286,6 +285,53 @@ $_initials   = strtoupper(substr($_avatar_user['name'] ?? '?', 0, 1));
                     </a>
                 </div>
             </header>
+
+            <!-- Enrollment Banner (shown when enrollment is open) -->
+            <div id="enrollmentBanner" style="display:none; margin-bottom:1.25rem;">
+                <div style="
+                    background: var(--sidebar-gradient);
+                    border: 1px solid var(--primary-purple);
+                    border-radius: var(--radius-lg, 16px);
+                    padding: 1.1rem 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 1rem;
+                    flex-wrap: wrap;
+                    box-shadow: var(--shadow-md);
+                ">
+                    <div style="display:flex; align-items:center; gap:0.85rem;">
+                        <div style="
+                            width: 2.75rem; height: 2.75rem;
+                            background: rgba(255,255,255,0.15);
+                            border-radius: 10px;
+                            display: flex; align-items: center; justify-content: center;
+                            font-size: 1.35rem; flex-shrink: 0;
+                        ">📋</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1rem; color:var(--text-white); letter-spacing:0.01em;">Enrollment is now open!</div>
+                            <div style="font-size:0.82rem; color:rgba(255,255,255,0.7);" id="enrollmentBannerSub">Submit your enrollment for the current semester.</div>
+                        </div>
+                    </div>
+                    <a id="enrollNowBtn" href="../enrollment.html" style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.4rem;
+                        background: var(--btn-primary-gradient);
+                        color: var(--text-white);
+                        font-weight: 700;
+                        font-size: 0.875rem;
+                        padding: 0.6rem 1.25rem;
+                        border-radius: var(--radius-md, 12px);
+                        text-decoration: none;
+                        white-space: nowrap;
+                        transition: opacity 0.15s, box-shadow 0.15s;
+                        box-shadow: 0 2px 8px var(--btn-primary-shadow);
+                    " onmouseover="this.style.opacity='0.88';this.style.boxShadow='0 4px 14px var(--btn-primary-shadow-hover)'" onmouseout="this.style.opacity='1';this.style.boxShadow='0 2px 8px var(--btn-primary-shadow)'">
+                        Enroll Now →
+                    </a>
+                </div>
+            </div>
 
             <!-- Stats Grid -->
             <div class="stats-grid">
@@ -376,38 +422,6 @@ $_initials   = strtoupper(substr($_avatar_user['name'] ?? '?', 0, 1));
                     ?>
 
                     <?php if ($is_returnee): ?>
-                    <!-- RETURNEE: Can re-enroll online via dedicated page -->
-                    <div class="enroll-blocked">
-                        <span class="blocked-icon">🎓</span>
-                        <div style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(61,107,159,0.12);color:var(--primary-purple-dark);border:1px solid rgba(61,107,159,0.3);border-radius:999px;padding:.35rem 1rem;font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1rem;">
-                            ✅ Active Student — Returnee
-                        </div>
-                        <div class="blocked-title">Ready to re-enroll for the next school year?</div>
-                        <p class="blocked-desc">
-                            As a <strong>returning student</strong>, you can re-enroll online. Your personal
-                            information will be pre-filled from our records — just confirm your details,
-                            choose your new year level and section, and submit.
-                        </p>
-                        <a href="reenrollment.php"
-                           style="display:inline-flex;align-items:center;gap:.5rem;background:var(--background-sidebar);color:var(--text-white);padding:.85rem 2rem;border-radius:999px;font-weight:700;font-size:.9rem;text-decoration:none;margin-bottom:1.5rem;transition:background .2s;"
-                           onmouseover="this.style.background='var(--background-sidebar-hover)'"
-                           onmouseout="this.style.background='var(--background-sidebar)'">
-                            🔄 Start Re-Enrollment
-                        </a>
-                        <div class="blocked-info-box">
-                            <strong>📋 What you'll need:</strong>
-                            <ul>
-                                <li>Previous semester's <strong>Report Card / Grades</strong></li>
-                                <li>Your valid <strong>School ID</strong></li>
-                                <li>Settle any outstanding <strong>fees</strong> with Accounting</li>
-                            </ul>
-                        </div>
-                        <div class="blocked-contact">
-                            Questions? Contact the Registrar at
-                            <a href="tel:032-326-3677">(032) 326-3677</a> or
-                            <a href="mailto:info@stcecilia.edu.ph">info@stcecilia.edu.ph</a>
-                        </div>
-                    </div>
 
                     <?php else: ?>
                     <!-- OPEN: New / pending / inactive student can submit enrollment -->
@@ -458,6 +472,48 @@ $_initials   = strtoupper(substr($_avatar_user['name'] ?? '?', 0, 1));
                     todayName = data.today || new Date().toLocaleDateString('en-US', {weekday:'long'});
                     buildScheduleWidget(data.all_schedule || data.schedule || []);
                     loadAnnouncements(data.announcements);
+
+                    // Enrollment banner
+                    const banner = document.getElementById('enrollmentBanner');
+                    if (data.enrollment_open) {
+                        const sem   = data.current_semester || 'current semester';
+                        const year  = data.school_year      || '';
+                        document.getElementById('enrollmentBannerSub').textContent =
+                            'Enrollment for ' + sem + (year ? ' S.Y. ' + year : '') + ' is now open. Submit your enrollment application.';
+                        banner.style.display = 'block';
+
+                        // Build enrollment URL with student info pre-filled
+                        const studentName = data.user.name || '';
+                        const nameParts   = studentName.trim().split(/\s+/);
+                        // Heuristic: Last word = surname, first word = firstname, rest = middle
+                        const surname   = nameParts.length > 1 ? nameParts[nameParts.length - 1] : studentName;
+                        const firstname = nameParts.length > 0 ? nameParts[0] : '';
+                        const middlename = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
+
+                        const params = new URLSearchParams({
+                            autofill:   '1',
+                            surname:    surname,
+                            firstname:  firstname,
+                            middlename: middlename,
+                            email:      data.user.email      || '',
+                            student_id: data.user.student_id || '',
+                            course:     data.user.course     || '',
+                            year_level: data.user.year_level || '',
+                            semester:   sem,
+                            ay:         year
+                        });
+                        const enrollBtn = document.getElementById('enrollNowBtn');
+                        if (enrollBtn) {
+                            enrollBtn.href = '../enrollment.html?' + params.toString();
+                        }
+                        // Also update iframe src if enrollment section is showing
+                        const enrollFrame = document.querySelector('.enroll-frame');
+                        if (enrollFrame) {
+                            enrollFrame.src = '../enrollment.html?' + params.toString();
+                        }
+                    } else {
+                        banner.style.display = 'none';
+                    }
                 } else {
                     console.error('[Dashboard] API error:', data.message);
                 }
@@ -782,7 +838,6 @@ mark.gs-hl { background: rgba(61,107,159,.15); color: var(--primary-purple, #3D6
         { title: 'Announcements',    url: 'announcements.php',  icon: '📢', sub: 'School announcements' },
         { title: 'Feedback',         url: 'feedback.php',       icon: '💬', sub: 'Submit feedback' },
         { title: 'Profile',          url: 'profile.php',        icon: '👤', sub: 'My account & settings' },
-        { title: 'Re-enrollment',    url: 'reenrollment.php',   icon: '🎓', sub: 'Enroll for next school year' },
         { title: 'Chatbot',          url: 'chatbot.php',        icon: '🤖', sub: 'AI assistant' },
     ];
 

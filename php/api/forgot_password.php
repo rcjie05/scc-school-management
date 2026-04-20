@@ -58,9 +58,8 @@ function safeLog($conn, $user_id, $action) {
     } catch (Exception $e) {}
 }
 
-// ── Send OTP via Email ────────────────────────────────────────────────────────
+// ── Send OTP via Gmail SMTP ───────────────────────────────────────────────────
 function sendOtpEmail($toEmail, $toName, $otp) {
-    global $school_name;
     $subject = "Your Password Reset OTP - " . $school_name . "";
     $name    = htmlspecialchars($toName, ENT_QUOTES);
     $year    = date('Y');
@@ -73,11 +72,11 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
   <tr><td style='background:#8b0000;padding:30px 32px;text-align:center;border-bottom:4px solid #c8a951;'>
     <p style='margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px;'>" . $school_name . "</p>
-    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>" . $school_name . "</p>
+    <p style='margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);'>My School</p>
   </td></tr>
 
   <tr><td style='padding:38px 40px;'>
-    <p style='margin:0 0 10px;font-size:16px;color:#222;'>Hello, <strong>" . $name . "</strong> 👋</p>
+    <p style='margin:0 0 10px;font-size:16px;color:#222;'>Hello, <strong>{$name}</strong> 👋</p>
     <p style='margin:0 0 28px;font-size:14px;color:#555;line-height:1.7;'>
       We received a request to reset your password.<br>
       Use the <strong>6-digit OTP</strong> below to continue. It expires in <strong>10 minutes</strong>.
@@ -85,7 +84,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 
     <div style='background:#fdf8f0;border:2px solid #c8a951;border-radius:12px;padding:28px;text-align:center;margin-bottom:28px;'>
       <p style='margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#8b0000;'>Your OTP Code</p>
-      <p style='margin:0;font-size:44px;font-weight:900;letter-spacing:12px;color:#8b0000;font-family:Courier New,monospace;'>" . $otp . "</p>
+      <p style='margin:0;font-size:44px;font-weight:900;letter-spacing:12px;color:#8b0000;font-family:Courier New,monospace;'>{$otp}</p>
     </div>
 
     <p style='margin:0 0 6px;font-size:13px;color:#999;'>⚠️ Do not share this code with anyone.</p>
@@ -96,7 +95,7 @@ function sendOtpEmail($toEmail, $toName, $otp) {
   </td></tr>
 
   <tr><td style='background:#f8f8f8;padding:16px 40px;border-top:1px solid #eee;text-align:center;'>
-    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; " . $year . " " . $school_name . ", Inc. &middot; All rights reserved</p>
+    <p style='margin:0;font-size:11px;color:#bbb;'>&copy; {$year} " . $school_name . ", Inc. &middot; All rights reserved</p>
   </td></tr>
 
 </table>
@@ -105,14 +104,10 @@ function sendOtpEmail($toEmail, $toName, $otp) {
 </body></html>";
 
     try {
-        $mailer = new GmailMailer();
-        $sent = $mailer->send($toEmail, $toName, $subject, $body);
-        if (!$sent) {
-            error_log('OTP email: GmailMailer->send() returned false for ' . $toEmail);
-        }
-        return $sent;
+        $mailer = new SMTPMailer();
+        return $mailer->send($toEmail, $toName, $subject, $body);
     } catch (Exception $e) {
-        error_log('OTP email exception: ' . $e->getMessage());
+        error_log('Email send failed: ' . $e->getMessage());
         return false;
     }
 }
@@ -127,9 +122,6 @@ if (empty($action)) respond(false, 'No action specified.');
 
 $conn = getDBConnection();
 if (!$conn) respond(false, 'Database connection failed. Please contact the administrator.');
-
-// Force MySQL session timezone to UTC to avoid timezone mismatch on Railway
-$conn->query("SET time_zone = '+00:00'");
 
 ensureOtpTable($conn);
 
@@ -204,20 +196,19 @@ if ($action === 'send_otp') {
     $ins->close();
 
     // Send email
-    $resend_key = getenv('RESEND_API_KEY');
-    if (empty($resend_key)) {
-        safeLog($conn, $user['id'], 'OTP email failed: RESEND_API_KEY not set');
-        $conn->close();
-        respond(false, 'Email service not configured. RESEND_API_KEY is missing in Railway Variables.');
-    }
-
+    require_once __DIR__ . '/../smtp_mailer.php';
     $sent = sendOtpEmail($email, $user['name'], $otp);
 
-    safeLog($conn, $user['id'], 'Password reset OTP requested. Email sent: ' . ($sent ? 'yes' : 'no'));
+    safeLog($conn, $user['id'], 'Password reset OTP requested');
     $conn->close();
 
     if (!$sent) {
-        respond(false, 'Failed to send OTP email. RESEND_API_KEY may be invalid or Resend rejected the request.');
+        // Email failed — still allow testing by returning OTP (localhost dev only)
+        $is_local = in_array($_SERVER['SERVER_NAME'] ?? '', ['localhost', '127.0.0.1', '::1']);
+        if ($is_local) {
+            respond(true, 'Email not sent (check SMTP settings in config.php). Dev OTP shown below.', ['dev_otp' => $otp]);
+        }
+        respond(false, 'Failed to send OTP email. Please check SMTP settings or contact the administrator.');
     }
 
     respond(true, 'OTP sent successfully! Check your email inbox and spam folder.');

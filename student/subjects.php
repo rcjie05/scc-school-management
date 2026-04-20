@@ -146,25 +146,95 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
         .add-btn:disabled { opacity: .5; cursor: not-allowed; }
 
         /* Modal */
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
-        .modal.active { display:flex; }
-        .modal-content { background:var(--background-card); padding:2rem; border-radius:var(--radius-lg); width:90%; max-width:480px; }
-        .modal-title { font-size:1.15rem; font-weight:700; margin-bottom:1rem; }
-        .modal-subject { background:var(--background-main); border-radius:var(--radius-md); padding:.75rem 1rem; margin-bottom:1rem; }
-        .modal-subject .code { font-weight:700; color:var(--primary-purple); }
-        .modal-subject .name { font-size:.9rem; color:var(--text-secondary); margin-top:.2rem; }
-        .reason-label { font-weight:600; font-size:.88rem; margin-bottom:.4rem; display:block; }
-        .reason-input { width:100%; padding:.65rem .85rem; border:1.5px solid var(--border-color); border-radius:var(--radius-md); font-size:.92rem; resize:vertical; min-height:80px; font-family:inherit; box-sizing:border-box; }
-        .reason-input:focus { outline:none; border-color:var(--primary-purple); }
-        .modal-actions { display:flex; gap:.75rem; margin-top:1.25rem; }
-        .modal-actions button { flex:1; padding:.65rem; border:none; border-radius:var(--radius-md); font-weight:700; cursor:pointer; font-size:.92rem; }
-        .btn-cancel { background:var(--background-main); color:var(--text-primary); }
-        .btn-submit-add  { background:var(--primary-purple); color:white; }
-        .btn-submit-drop { background:var(--secondary-pink); color:var(--text-white); }
+        .modal {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            z-index:1000; align-items:center; justify-content:center;
+            padding: 1rem;
+        }
+        .modal.active { display:flex; animation: modalFadeIn .2s ease; }
+        @keyframes modalFadeIn { from { opacity:0; } to { opacity:1; } }
+        .modal-content {
+            background:var(--background-card);
+            border-radius:var(--radius-lg);
+            width:90%; max-width:480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: modalSlideUp .22s ease;
+        }
+        @keyframes modalSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .modal-header {
+            display: flex; align-items: center; gap: .85rem;
+            padding: 1.4rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.15rem; flex-shrink: 0;
+        }
+        .modal-icon-add  { background: rgba(61,107,159,0.12); }
+        .modal-icon-drop { background: rgba(184,92,92,0.12); }
+        .modal-title { font-size:1.05rem; font-weight:700; color:var(--text-primary); }
+        .modal-subtitle { font-size:.8rem; color:var(--text-secondary); margin-top:.1rem; }
+        .modal-body { padding: 1.25rem 1.5rem; }
+        .modal-subject {
+            background:var(--background-main);
+            border-radius:var(--radius-md);
+            padding:.8rem 1rem;
+            margin-bottom:1.1rem;
+            border: 1px solid var(--border-color);
+        }
+        .modal-subject-label { font-size:.72rem; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:.3rem; }
+        .modal-subject .code { font-weight:700; color:var(--primary-purple); font-size:.95rem; }
+        .modal-subject .name { font-size:.85rem; color:var(--text-secondary); margin-top:.15rem; }
+        .reason-label { font-weight:600; font-size:.84rem; margin-bottom:.45rem; display:block; color:var(--text-primary); }
+        .reason-input {
+            width:100%; padding:.7rem .9rem;
+            border:1.5px solid var(--border-color);
+            border-radius:var(--radius-md);
+            font-size:.9rem; resize:vertical; min-height:90px;
+            font-family:inherit; box-sizing:border-box;
+            background: var(--background-card);
+            color: var(--text-primary);
+            transition: border-color .18s, box-shadow .18s;
+        }
+        .reason-input:focus { outline:none; border-color:var(--primary-purple); box-shadow: 0 0 0 3px rgba(61,107,159,0.1); }
+        .reason-input::placeholder { color: var(--text-light); }
+        .modal-footer {
+            display:flex; gap:.75rem;
+            padding: 1rem 1.5rem 1.4rem;
+        }
+        .modal-footer button {
+            flex:1; padding:.7rem;
+            border:none; border-radius:var(--radius-md);
+            font-weight:700; cursor:pointer; font-size:.9rem;
+            transition: opacity .15s, transform .15s;
+        }
+        .modal-footer button:hover { opacity:.88; transform:translateY(-1px); }
+        .modal-footer button:active { transform:translateY(0); }
+        .btn-cancel { background:var(--background-main); color:var(--text-primary); border: 1px solid var(--border-color) !important; }
+        .btn-submit-add  { background:var(--btn-primary-gradient); color:white; box-shadow: 0 2px 8px var(--btn-primary-shadow); }
+        .btn-submit-drop { background:var(--secondary-pink); color:var(--text-white); box-shadow: 0 2px 8px rgba(184,92,92,0.25); }
 
         .req-row { padding:.75rem 1rem; border-radius:var(--radius-md); background:var(--background-main); margin-bottom:.5rem; }
         .req-row-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:.3rem; }
         .req-note { font-size:.8rem; color:var(--text-secondary); margin-top:.25rem; padding:.35rem .6rem; background:var(--background-main); border-radius:var(--radius-sm); }
+        .btn-cancel-request {
+            padding: .22rem .7rem;
+            font-size: .75rem;
+            border: 1.5px solid var(--secondary-pink);
+            background: transparent;
+            color: var(--secondary-pink);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .btn-cancel-request:hover { background: var(--secondary-pink); color: var(--text-white); }
+        .btn-cancel-request:disabled { opacity: .5; cursor: not-allowed; }
         /* Toast notification */
         #scc-toast {
             position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;
@@ -215,7 +285,6 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
                     <div class="nav-section-title">Support</div>
                     <a href="announcements.php" class="nav-item"><span class="nav-icon">📢</span><span>Announcements</span></a>
                     <a href="feedback.php" class="nav-item"><span class="nav-icon">💬</span><span>Feedback</span></a>
-                    <a href="reenrollment.php" class="nav-item"><span class="nav-icon">🔁</span><span>Re-enrollment</span></a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Account</div>
@@ -327,16 +396,53 @@ $show_bshtm_bg = (strpos($student_course, 'bshtm') !== false || strpos($student_
 
 <div class="modal" id="reasonModal">
     <div class="modal-content">
-        <div class="modal-title" id="modalTitle">Submit Request</div>
-        <div class="modal-subject">
-            <div class="code" id="modalSubjectCode"></div>
-            <div class="name" id="modalSubjectName"></div>
+        <div class="modal-header">
+            <div class="modal-icon" id="modalIcon">📋</div>
+            <div>
+                <div class="modal-title" id="modalTitle">Submit Request</div>
+                <div class="modal-subtitle" id="modalSubtitle">Fill in your reason and submit for registrar review.</div>
+            </div>
         </div>
-        <label class="reason-label">Reason <span style="color:var(--secondary-pink);">*</span></label>
-        <textarea class="reason-input" id="reasonInput" placeholder="Please explain your reason for this request…"></textarea>
-        <div class="modal-actions">
+        <div class="modal-body">
+            <div class="modal-subject">
+                <div class="modal-subject-label">Subject</div>
+                <div class="code" id="modalSubjectCode"></div>
+                <div class="name" id="modalSubjectName"></div>
+            </div>
+            <label class="reason-label">Reason <span style="color:var(--secondary-pink);">*</span></label>
+            <textarea class="reason-input" id="reasonInput" placeholder="Please explain your reason for this request…"></textarea>
+        </div>
+        <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button id="submitBtn" onclick="submitRequest()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Request Confirmation Modal -->
+<div class="modal" id="cancelConfirmModal">
+    <div class="modal-content" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-icon modal-icon-drop">🗑️</div>
+            <div>
+                <div class="modal-title">Cancel Request</div>
+                <div class="modal-subtitle">This action cannot be undone.</div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="modal-subject">
+                <div class="modal-subject-label">Request to cancel</div>
+                <div class="code" id="cancelModalCode"></div>
+                <div class="name" id="cancelModalName"></div>
+                <div id="cancelModalType" style="margin-top:.4rem;"></div>
+            </div>
+            <p style="font-size:.87rem;color:var(--text-secondary);line-height:1.55;">
+                Are you sure you want to cancel this pending request? It will be removed and you can submit a new one later.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeCancelModal()">Keep Request</button>
+            <button id="confirmCancelBtn" onclick="confirmCancel()" class="btn-submit-drop">Yes, Cancel It</button>
         </div>
     </div>
 </div>
@@ -481,15 +587,16 @@ async function loadRequests() {
         }
 
         container.innerHTML = data.requests.map(r => `
-            <div class="req-row">
+            <div class="req-row" id="req-row-${r.id}">
                 <div class="req-row-header">
                     <div>
                         <strong>${r.subject_code}</strong> — ${r.subject_name}
                         <span class="req-badge req-${r.request_type}" style="margin-left:.4rem;">${r.request_type.toUpperCase()}</span>
                     </div>
-                    <div style="display:flex;gap:.5rem;align-items:center;">
+                    <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
                         <span class="req-badge req-${r.status}">${r.status.charAt(0).toUpperCase()+r.status.slice(1)}</span>
                         <span style="font-size:.75rem;color:var(--text-secondary);">${r.created_at}</span>
+                        ${r.status === 'pending' ? `<button class="btn-cancel-request" onclick="cancelRequest(${r.id}, '${r.request_type}', this)">✕ Cancel</button>` : ''}
                     </div>
                 </div>
                 <div style="font-size:.82rem;color:var(--text-secondary);">Reason: ${r.reason}</div>
@@ -505,13 +612,17 @@ async function loadRequests() {
 // ── Modal ──────────────────────────────────────────────
 function openModal(subject_id, request_type, subject_code, subject_name) {
     pendingRequest = { subject_id, request_type, subject_code, subject_name };
-    document.getElementById('modalTitle').textContent   = request_type === 'add' ? '➕ Request to Add Subject' : '🗑️ Request to Drop Subject';
+    const isAdd = request_type === 'add';
+    document.getElementById('modalIcon').textContent     = isAdd ? '➕' : '🗑️';
+    document.getElementById('modalIcon').className       = 'modal-icon ' + (isAdd ? 'modal-icon-add' : 'modal-icon-drop');
+    document.getElementById('modalTitle').textContent    = isAdd ? 'Request to Add Subject' : 'Request to Drop Subject';
+    document.getElementById('modalSubtitle').textContent = isAdd ? 'Submit a request to add this subject to your load.' : 'Submit a request to drop this subject from your load.';
     document.getElementById('modalSubjectCode').textContent = subject_code;
     document.getElementById('modalSubjectName').textContent = subject_name;
     document.getElementById('reasonInput').value = '';
     const btn = document.getElementById('submitBtn');
-    btn.textContent = request_type === 'add' ? 'Submit Add Request' : 'Submit Drop Request';
-    btn.className   = request_type === 'add' ? 'btn-submit-add' : 'btn-submit-drop';
+    btn.textContent = isAdd ? 'Submit Add Request' : 'Submit Drop Request';
+    btn.className   = isAdd ? 'btn-submit-add' : 'btn-submit-drop';
     document.getElementById('reasonModal').classList.add('active');
     document.getElementById('reasonInput').focus();
 }
@@ -519,6 +630,91 @@ function openModal(subject_id, request_type, subject_code, subject_name) {
 function closeModal() {
     document.getElementById('reasonModal').classList.remove('active');
     pendingRequest = null;
+}
+
+// ── Cancel a pending Add/Drop Request ──────────────────
+let pendingCancelId   = null;
+let pendingCancelType = null;
+let pendingCancelBtn  = null;
+
+function cancelRequest(requestId, requestType, btn) {
+    pendingCancelId   = requestId;
+    pendingCancelType = requestType;
+    pendingCancelBtn  = btn;
+
+    // Populate the confirmation modal
+    const row = document.getElementById('req-row-' + requestId);
+    const codeEl = row ? row.querySelector('strong') : null;
+    const nameEl = row ? row.querySelector('strong + span, strong') : null;
+    const rowText = row ? row.querySelector('.req-row-header strong') : null;
+
+    // Parse subject info from the row
+    const headerDiv = row ? row.querySelector('.req-row-header > div:first-child') : null;
+    if (headerDiv) {
+        const strong = headerDiv.querySelector('strong');
+        const full   = headerDiv.textContent;
+        const code   = strong ? strong.textContent.trim() : '';
+        const name   = full.replace(code, '').replace(/^\s*—\s*/, '').split('\n')[0].trim().replace(/\s+[A-Z]+\s*$/, '').trim();
+        document.getElementById('cancelModalCode').textContent = code;
+        document.getElementById('cancelModalName').textContent = name;
+    }
+
+    const typeLabel = requestType === 'drop' ? 'DROP' : 'ADD';
+    const typeColor = requestType === 'drop' ? 'req-drop' : 'req-add';
+    document.getElementById('cancelModalType').innerHTML =
+        `<span class="req-badge ${typeColor}">${typeLabel} Request</span>`;
+
+    document.getElementById('cancelConfirmModal').classList.add('active');
+}
+
+function closeCancelModal() {
+    document.getElementById('cancelConfirmModal').classList.remove('active');
+    pendingCancelId   = null;
+    pendingCancelType = null;
+    pendingCancelBtn  = null;
+}
+
+async function confirmCancel() {
+    if (!pendingCancelId) return;
+
+    const btn = document.getElementById('confirmCancelBtn');
+    btn.disabled    = true;
+    btn.textContent = 'Cancelling…';
+
+    try {
+        const res  = await fetch('../php/api/student/cancel_add_drop.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ request_id: pendingCancelId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            closeCancelModal();
+            showToast(data.message, 'success');
+            const row = document.getElementById('req-row-' + pendingCancelId);
+            if (row) {
+                row.style.transition = 'opacity .3s, transform .3s';
+                row.style.opacity    = '0';
+                row.style.transform  = 'translateX(10px)';
+                setTimeout(() => { row.remove(); }, 310);
+            }
+            if (pendingCancelType === 'drop') {
+                pendingSubjectIds.clear();
+                await loadStudyLoad();
+                await loadPendingDropIds();
+            }
+            // Refresh request count badge
+            await loadPendingDropIds();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch(e) {
+        showToast('Failed to cancel request. Please try again.', 'error');
+    } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Yes, Cancel It';
+    }
 }
 
 async function submitRequest() {
@@ -584,6 +780,9 @@ function hideToast() {
 // Close modal on backdrop click
 document.getElementById('reasonModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
+});
+document.getElementById('cancelConfirmModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCancelModal();
 });
 
 loadStudyLoad();
@@ -770,7 +969,6 @@ mark.gs-hl { background: rgba(61,107,159,.15); color: var(--primary-purple, #3D6
         { title: 'Announcements',    url: 'announcements.php',  icon: '📢', sub: 'School announcements' },
         { title: 'Feedback',         url: 'feedback.php',       icon: '💬', sub: 'Submit feedback' },
         { title: 'Profile',          url: 'profile.php',        icon: '👤', sub: 'My account & settings' },
-        { title: 'Re-enrollment',    url: 'reenrollment.php',   icon: '🎓', sub: 'Enroll for next school year' },
         { title: 'Chatbot',          url: 'chatbot.php',        icon: '🤖', sub: 'AI assistant' },
     ];
 

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrollment Form — Student Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: #bbb;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.screen-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  width: 210mm;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.screen-bar h2 {
+  flex: 1;
+  font-size: 13px;
+  color: #8b0000;
+  font-family: 'Playfair Display', serif;
+}
+.screen-bar button {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.btn-print { background: #8b0000; color: #fff; }
+.btn-print:hover { background: #a31515; }
+.btn-tip { background: #c8a951; color: #1e293b; font-size: 10px; cursor: default; }
+.btn-back { background: #666; color: #fff; margin-right: 10px; }
+.btn-back:hover { background: #888; }
+
+/* A4 PAGE */
+.a4 {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  box-shadow: 0 4px 30px rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: column;
+  padding: 5mm 7mm;
+}
+
+.a4-back {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  box-shadow: 0 4px 30px rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: column;
+  padding: 5mm 7mm;
+}
+
+/* ── Mobile: scale the A4 page to fit the screen ── */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+    align-items: stretch;
+    overflow-x: hidden;
+    background: #e5e5e5;
+  }
+
+  .screen-bar {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .screen-bar h2 {
+    font-size: 12px;
+    width: 100%;
+    white-space: normal;
+    line-height: 1.3;
+  }
+
+  .screen-bar button {
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 12px;
+    border-radius: 7px;
+    min-height: 40px;
+  }
+
+  /* Scrollable container — user can pan around the A4 */
+  .page-scroll-wrapper {
+    width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+
+  .page-scroll-inner {
+    padding: 12px;
+    /* Make inner wide enough for A4 + padding */
+    min-width: calc(210mm + 24px);
+    display: block;
+  }
+
+  .a4, .a4-back {
+    width: 210mm;
+    box-shadow: 0 4px 20px rgba(0,0,0,.3);
+    margin: 0 auto;
+  }
+
+  /* Hint bar shown only on mobile */
+  .mobile-hint {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    background: #1e3352;
+    color: #fff;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin-bottom: 2px;
+  }
+  .mobile-hint span { font-size: 16px; }
+}
+
+/* Hide hint on desktop */
+.mobile-hint { display: none; }
+
+.form-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 3mm;
+}
+.form-copy + .form-copy {
+  border-top: 1.5px dashed #888;
+  padding-top: 3mm;
+  padding-bottom: 0;
+}
+
+.copy-tag {
+  display: inline-block;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #666;
+  border: .8px solid #aaa;
+  background: #f5f5f5;
+  padding: 1px 8px;
+  border-radius: 2px;
+  margin-bottom: 2px;
+  align-self: flex-start;
+}
+
+/* FORM INTERNALS */
+.paper {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 7.8px;
+  color: #000;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.paper input[type=text],
+.paper input[type=number],
+.paper select {
+  border: none;
+  border-bottom: .8px solid #000;
+  outline: none;
+  font-family: 'Times New Roman', serif;
+  font-size: 7.8px;
+  background: transparent;
+  color: #000;
+  min-width: 0;
+  padding: 0 1px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  width: 100%;
+}
+
+/* TOP 3-COL HEADER */
+.top-header {
+  display: grid;
+  grid-template-columns: 128px 1fr 126px;
+  gap: 5px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #000;
+  align-items: stretch;
+}
+.req-box {
+  border: .8px solid #666;
+  padding: 3px 5px;
+  font-size: 7px;
+  line-height: 1.95;
+}
+.req-box label { display: flex; align-items: center; gap: 3px; }
+.req-box input[type=checkbox] {
+  width: 8px; height: 8px;
+  accent-color: #000;
+  flex-shrink: 0;
+  border: none !important;
+  border-bottom: none !important;
+}
+.school-center {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+}
+.sc-name  { font-size: 9.5px; font-weight: bold; font-style: italic; line-height: 1.2; margin-bottom: 1px; }
+.sc-sub   { font-size: 7px; margin-bottom: 1px; }
+.sc-dept  { font-size: 8px; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+.sc-title { font-size: 9px; font-weight: bold; text-decoration: underline; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
+.sc-sem   { font-size: 7.5px; border-bottom: .8px solid #000; min-width: 120px; padding-bottom: 1px; margin-bottom: 3px; text-align: center; }
+.sc-sem input { text-align: center; width: 100px; border-bottom: none; font-size: 7.5px; }
+.sc-ay    { font-size: 7.5px; }
+.sc-ay input { width: 65px; font-size: 7.5px; }
+.shiftee-box {
+  border: .8px solid #666; padding: 3px 5px;
+  font-size: 7.5px; display: flex; flex-direction: column; gap: 2.5px;
+}
+.sf-from { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.sf-from input { width: 26px; font-size: 7.5px; }
+.sf-chk { display: flex; align-items: center; justify-content: space-between; }
+.bracket {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 10px; height: 9px;
+  border: .8px solid #555; font-size: 7px;
+  cursor: pointer; user-select: none; margin-left: 3px; flex-shrink: 0;
+}
+.sf-idno { display: flex; align-items: center; gap: 2px; margin-top: 1px; }
+.sf-idno input { flex: 1; font-size: 7.5px; }
+
+/* ACADEMIC STATUS */
+.acad-row {
+  display: flex; justify-content: space-between;
+  align-items: center; font-size: 7.8px;
+}
+.acad-left { display: flex; align-items: center; gap: 8px; }
+.acad-left .check-label { display: flex; align-items: center; gap: 2px; cursor: pointer; }
+.acad-right { display: flex; flex-direction: column; gap: 2px; }
+.acad-right .ar { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.acad-right .ar input { width: 115px; font-size: 7.8px; }
+
+/* INFO GRID */
+.igrid { border: .8px solid #555; }
+.ig-row { display: flex; border-bottom: .8px solid #555; align-items: stretch; }
+.ig-row:last-child { border-bottom: none; }
+.ig-cell { display: flex; align-items: center; padding: 1.5px 4px; border-right: .8px solid #555; gap: 3px; font-size: 7.8px; flex: 1; }
+.ig-cell:last-child { border-right: none; }
+.ig-cell b { white-space: nowrap; font-size: 7.5px; flex-shrink: 0; }
+.ig-cell input, .ig-cell select { flex: 1; font-size: 7.8px; }
+.name-header { display: flex; border-bottom: .8px solid #bbb; align-items: center; }
+.name-lbl { padding: 1.5px 4px; font-weight: bold; font-size: 7.8px; flex: 1; border-right: .8px solid #555; }
+.name-mobile { display: flex; align-items: center; gap: 3px; padding: 1.5px 4px; font-size: 7.8px; width: 148px; }
+.name-mobile input { flex: 1; }
+.name-subs { display: flex; min-height: 17px; }
+.name-sub { flex: 1; padding: 1.5px 4px 1px; border-right: .8px solid #555; display: flex; flex-direction: column; }
+.name-sub:last-child { border-right: none; }
+.name-sub input { width: 100%; border-bottom: .8px solid #000; margin-bottom: 1px; font-size: 7.8px; }
+.name-sub span { font-size: 6px; color: #555; text-align: center; }
+.birth-row { display: flex; border-bottom: .8px solid #555; align-items: stretch; }
+.bc { display: flex; align-items: center; padding: 1.5px 3px; border-right: .8px solid #555; gap: 2px; font-size: 7.8px; }
+.bc:last-child { border-right: none; }
+.bc b { white-space: nowrap; font-size: 7.5px; flex-shrink: 0; }
+.bc input, .bc select { flex: 1; font-size: 7.8px; }
+
+/* COURSE TABLE */
+.ctable { width: 100%; border-collapse: collapse; font-size: 7.5px; }
+.ctable th {
+  border: .8px solid #555; padding: 2px; text-align: center;
+  font-weight: bold; font-size: 7.5px; vertical-align: middle;
+}
+.ctable td { border: .8px solid #555; padding: 0 2px; vertical-align: middle; height: 13px; }
+.ctable .ci {
+  width: 100%; border: none; outline: none;
+  font-family: 'Times New Roman', serif;
+  font-size: 7.5px; background: transparent; padding: 0;
+}
+.ctable .ci-center { text-align: center; }
+.ctable tfoot td {
+  font-size: 7.5px; font-weight: bold;
+  text-align: right; padding-right: 4px; border-top: .8px solid #555;
+}
+.total-line {
+  display: inline-block; min-width: 50px;
+  border-bottom: .8px solid #000; font-weight: normal; padding-left: 3px;
+}
+
+/* FORM FOOTER */
+.form-foot {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-top: 4px; font-size: 7.8px;
+}
+.approved { display: flex; align-items: flex-end; gap: 3px; }
+.approved input { width: 130px; font-size: 7.8px; }
+.sig-block { text-align: center; }
+.sig-line { border-top: .8px solid #000; width: 180px; margin: 0 auto 2px; }
+.sig-lbl { font-size: 7px; }
+
+/* BACK PAGE */
+.a4-back {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  box-shadow: 0 4px 30px rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: column;
+  padding: 5mm 7mm;
+  font-family: 'Times New Roman', Times, serif;
+  color: #000;
+}
+.back-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 3mm;
+}
+.back-copy + .back-copy {
+  border-top: 1.5px dashed #888;
+  padding-top: 3mm;
+  padding-bottom: 0;
+}
+.back-or-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 4mm;
+  font-size: 8px;
+}
+.back-or-block .or-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+.back-or-block .or-line {
+  display: inline-block;
+  width: 110px;
+  border-bottom: .8px solid #000;
+}
+.back-section-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  margin-top: 3px;
+}
+.back-sub-title {
+  font-size: 8.5px;
+  font-weight: bold;
+  margin-bottom: 3px;
+  margin-top: 5px;
+}
+.back-body-text {
+  font-size: 7.8px;
+  line-height: 1.55;
+  margin-bottom: 4px;
+  text-align: justify;
+}
+.back-ol {
+  margin-left: 16px;
+  margin-bottom: 3px;
+}
+.back-ol li {
+  font-size: 7.8px;
+  line-height: 1.55;
+  text-align: justify;
+  margin-bottom: 1.5px;
+}
+.back-ol-inner {
+  margin-left: 14px;
+  list-style-type: lower-alpha;
+}
+.payment-grid {
+  display: grid;
+  grid-template-columns: 70px 110px 110px 110px 70px;
+  gap: 0;
+  margin: 4px 0 6px 16px;
+  font-size: 7.8px;
+  align-items: end;
+}
+.payment-grid .pg-label { white-space: nowrap; padding-bottom: 2px; }
+.payment-grid .pg-line { border-bottom: .8px solid #000; height: 14px; }
+.payment-grid .pg-mid { text-align: center; padding-bottom: 2px; }
+.payment-grid .pg-exam { text-align: right; padding-bottom: 2px; }
+.back-sig-block {
+  margin-top: auto;
+  padding-top: 5mm;
+  text-align: center;
+  align-self: flex-end;
+}
+.back-sig-line { border-top: .8px solid #000; width: 190px; margin: 0 auto 2px; }
+.back-sig-lbl { font-size: 7.5px; }
+
+/* PRINT */
+@media print {
+  body { background: white; padding: 0; gap: 0; }
+  .screen-bar { display: none !important; }
+  .a4 { width: 210mm; min-height: 297mm; box-shadow: none; padding: 5mm 7mm; page-break-after: always; }
+  .a4-back { width: 210mm; min-height: 297mm; box-shadow: none; padding: 5mm 7mm; }
+  @page { size: A4 portrait; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen-bar">
+  <h2><span id="brandNameHeader">St. Cecilia's College-Cebu</span> — Enrollment Form &nbsp;|&nbsp; </h2>
+  <button class="btn-back" onclick="if(window.self !== window.top){ window.parent.history.back(); } else { window.history.back(); }">⬅️ Back</button>
+  <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+</div>
+
+<div class="mobile-hint"><span>👆</span> Scroll left &amp; right to view the full form. Use landscape mode for a better experience.</div>
+
+<div class="page-scroll-wrapper"><div class="page-scroll-inner"><div class="a4">
+
+  <!-- ══ STUDENT'S COPY ══ -->
+  <div class="form-copy">
+    <span class="copy-tag">Student's Copy</span>
+    <div class="paper">
+      <div class="top-header">
+        <div class="req-box">
+          <label><input type="checkbox"> Form 138-A</label>
+          <label><input type="checkbox"> Birth Certificate (NSO)</label>
+          <label><input type="checkbox"> Honorable Dismissal</label>
+          <label><input type="checkbox"> Cert. of Transfer Credentials</label>
+          <label><input type="checkbox"> 1x1 Colored Picture (4 pcs.)</label>
+          <label><input type="checkbox"> Medical Certificate</label>
+          <label><input type="checkbox"> Certificate of Good Moral</label>
+          <label><input type="checkbox"> Drug Test</label>
+        </div>
+        <div class="school-center">
+          <div class="sc-name" id="brandNameForm1">St. Cecilia's College - Cebu, Inc.</div>
+          <div class="sc-sub">De La Salle Supervised School</div>
+          <div class="sc-dept">Higher Education Department</div>
+          <div class="sc-title">Registration Form</div>
+          <div class="sc-sem"><input type="text" placeholder="_____________ Semester / Term"></div>
+          <div class="sc-ay">AY &nbsp;<input type="text" placeholder="__________"></div>
+        </div>
+        <div class="shiftee-box">
+          <div class="sf-from">Shiftee from:<input type="text">&nbsp;to:<input type="text"></div>
+          <div class="sf-chk">Transferee <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">Returnee <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">New Student <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">Old Student <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-idno">I.D. No.<input type="text"></div>
+        </div>
+      </div>
+      <div class="acad-row">
+        <div class="acad-left">
+          <b>Academic Status:</b>
+          <span class="check-label"><span class="bracket" onclick="toggleBracket(this)"></span> Regular</span>
+          <span class="check-label"><span class="bracket" onclick="toggleBracket(this)"></span> Irregular</span>
+        </div>
+        <div class="acad-right">
+          <div class="ar">Year Level: <input type="text"></div>
+          <div class="ar">Course/Program: <input type="text"></div>
+        </div>
+      </div>
+      <div class="igrid">
+        <div class="ig-row" style="flex-direction:column;padding:0;">
+          <div class="name-header">
+            <div class="name-lbl">Name:</div>
+            <div class="name-mobile"><b>Mobile No:</b><input type="text"></div>
+          </div>
+          <div class="name-subs">
+            <div class="name-sub" style="flex:1.3;"><input type="text"><span>Surname</span></div>
+            <div class="name-sub" style="flex:1.3;"><input type="text"><span>First Name</span></div>
+            <div class="name-sub" style="flex:1;"><input type="text"><span>Middle Name</span></div>
+          </div>
+        </div>
+        <div class="birth-row">
+          <div class="bc" style="flex:.55;"><b>Year:</b><input type="text"></div>
+          <div class="bc" style="flex:.75;"><b>Month:</b><input type="text"></div>
+          <div class="bc" style="flex:.45;"><b>Day:</b><input type="text"></div>
+          <div class="bc" style="flex:.65;"><b>Sex:</b><select><option></option><option>Male</option><option>Female</option></select></div>
+          <div class="bc" style="flex:1.05;"><b>Religion:</b><input type="text"></div>
+          <div class="bc" style="flex:.75;border-right:none;"><b>Status:</b><select><option></option><option>Single</option><option>Married</option><option>Widowed</option></select></div>
+        </div>
+        <div class="ig-row"><div class="ig-cell"><b>Place of Birth:</b><input type="text"></div></div>
+        <div class="ig-row"><div class="ig-cell"><b>Home Address:</b><input type="text"></div></div>
+        <div class="ig-row">
+          <div class="ig-cell" style="flex:1.2;"><b>Previous School Attended:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Previous School Address:</b><input type="text"></div>
+        </div>
+        <div class="ig-row">
+          <div class="ig-cell" style="flex:1.2;"><b>Father's Name:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Occupation:</b><input type="text"></div>
+        </div>
+        <div class="ig-row" style="border-bottom:none;">
+          <div class="ig-cell" style="flex:1.2;"><b>Mother's Name/Guardian:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Occupation:</b><input type="text"></div>
+        </div>
+      </div>
+      <table class="ctable">
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:50px;">COURSE<br>CODE NO.</th>
+            <th rowspan="2">COURSE DESCRIPTION</th>
+            <th colspan="2">UNITS</th>
+            <th rowspan="2" style="width:42px;">Days</th>
+            <th rowspan="2" style="width:60px;">Time</th>
+            <th rowspan="2" style="width:42px;">Room</th>
+            <th rowspan="2" style="width:64px;">Instructor</th>
+          </tr>
+          <tr><th style="width:27px;">Lab</th><th style="width:27px;">Lec</th></tr>
+        </thead>
+        <tbody id="tbody-s"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7" style="border-right:.8px solid #555;"><b>Total Number of Units</b> <span class="total-line" id="total-s"></span></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="form-foot">
+        <div class="approved"><b>Approved by:</b><input type="text"></div>
+        <div class="sig-block">
+          <div class="sig-line"></div>
+          <div class="sig-lbl">Applicant's Signature above Printed Name</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ REGISTRAR'S COPY ══ -->
+  <div class="form-copy">
+    <span class="copy-tag">Registrar's Copy</span>
+    <div class="paper">
+      <div class="top-header">
+        <div class="req-box">
+          <label><input type="checkbox"> Form 138-A</label>
+          <label><input type="checkbox"> Birth Certificate (NSO)</label>
+          <label><input type="checkbox"> Honorable Dismissal</label>
+          <label><input type="checkbox"> Cert. of Transfer Credentials</label>
+          <label><input type="checkbox"> 1x1 Colored Picture (4 pcs.)</label>
+          <label><input type="checkbox"> Medical Certificate</label>
+          <label><input type="checkbox"> Certificate of Good Moral</label>
+          <label><input type="checkbox"> Drug Test</label>
+        </div>
+        <div class="school-center">
+          <div class="sc-name" id="brandNameForm1">St. Cecilia's College - Cebu, Inc.</div>
+          <div class="sc-sub">De La Salle Supervised School</div>
+          <div class="sc-dept">Higher Education Department</div>
+          <div class="sc-title">Registration Form</div>
+          <div class="sc-sem"><input type="text" placeholder="_____________ Semester / Term"></div>
+          <div class="sc-ay">AY &nbsp;<input type="text" placeholder="__________"></div>
+        </div>
+        <div class="shiftee-box">
+          <div class="sf-from">Shiftee from:<input type="text">&nbsp;to:<input type="text"></div>
+          <div class="sf-chk">Transferee <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">Returnee <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">New Student <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-chk">Old Student <span class="bracket" onclick="toggleBracket(this)"></span></div>
+          <div class="sf-idno">I.D. No.<input type="text"></div>
+        </div>
+      </div>
+      <div class="acad-row">
+        <div class="acad-left">
+          <b>Academic Status:</b>
+          <span class="check-label"><span class="bracket" onclick="toggleBracket(this)"></span> Regular</span>
+          <span class="check-label"><span class="bracket" onclick="toggleBracket(this)"></span> Irregular</span>
+        </div>
+        <div class="acad-right">
+          <div class="ar">Year Level: <input type="text"></div>
+          <div class="ar">Course/Program: <input type="text"></div>
+        </div>
+      </div>
+      <div class="igrid">
+        <div class="ig-row" style="flex-direction:column;padding:0;">
+          <div class="name-header">
+            <div class="name-lbl">Name:</div>
+            <div class="name-mobile"><b>Mobile No:</b><input type="text"></div>
+          </div>
+          <div class="name-subs">
+            <div class="name-sub" style="flex:1.3;"><input type="text"><span>Surname</span></div>
+            <div class="name-sub" style="flex:1.3;"><input type="text"><span>First Name</span></div>
+            <div class="name-sub" style="flex:1;"><input type="text"><span>Middle Name</span></div>
+          </div>
+        </div>
+        <div class="birth-row">
+          <div class="bc" style="flex:.55;"><b>Year:</b><input type="text"></div>
+          <div class="bc" style="flex:.75;"><b>Month:</b><input type="text"></div>
+          <div class="bc" style="flex:.45;"><b>Day:</b><input type="text"></div>
+          <div class="bc" style="flex:.65;"><b>Sex:</b><select><option></option><option>Male</option><option>Female</option></select></div>
+          <div class="bc" style="flex:1.05;"><b>Religion:</b><input type="text"></div>
+          <div class="bc" style="flex:.75;border-right:none;"><b>Status:</b><select><option></option><option>Single</option><option>Married</option><option>Widowed</option></select></div>
+        </div>
+        <div class="ig-row"><div class="ig-cell"><b>Place of Birth:</b><input type="text"></div></div>
+        <div class="ig-row"><div class="ig-cell"><b>Home Address:</b><input type="text"></div></div>
+        <div class="ig-row">
+          <div class="ig-cell" style="flex:1.2;"><b>Previous School Attended:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Previous School Address:</b><input type="text"></div>
+        </div>
+        <div class="ig-row">
+          <div class="ig-cell" style="flex:1.2;"><b>Father's Name:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Occupation:</b><input type="text"></div>
+        </div>
+        <div class="ig-row" style="border-bottom:none;">
+          <div class="ig-cell" style="flex:1.2;"><b>Mother's Name/Guardian:</b><input type="text"></div>
+          <div class="ig-cell" style="flex:1;"><b>Occupation:</b><input type="text"></div>
+        </div>
+      </div>
+      <table class="ctable">
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:50px;">COURSE<br>CODE NO.</th>
+            <th rowspan="2">COURSE DESCRIPTION</th>
+            <th colspan="2">UNITS</th>
+            <th rowspan="2" style="width:42px;">Days</th>
+            <th rowspan="2" style="width:60px;">Time</th>
+            <th rowspan="2" style="width:42px;">Room</th>
+            <th rowspan="2" style="width:64px;">Instructor</th>
+          </tr>
+          <tr><th style="width:27px;">Lab</th><th style="width:27px;">Lec</th></tr>
+        </thead>
+        <tbody id="tbody-r"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7" style="border-right:.8px solid #555;"><b>Total Number of Units</b> <span class="total-line" id="total-r"></span></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="form-foot">
+        <div class="approved"><b>Approved by:</b><input type="text"></div>
+        <div class="sig-block">
+          <div class="sig-line"></div>
+          <div class="sig-lbl">Applicant's Signature above Printed Name</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /a4 --></div></div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2 — BACK PAGE (DUPLICATED)
+     Student's Copy + Registrar's Copy
+══════════════════════════════════════ -->
+<div class="page-scroll-wrapper"><div class="page-scroll-inner"><div class="a4-back">
+
+  <!-- ══ STUDENT'S COPY — BACK ══ -->
+  <div class="back-copy">
+    <span class="copy-tag">Student's Copy</span>
+
+    <div class="back-or-block">
+      <div class="or-row">O.R. # <span class="or-line"></span></div>
+      <div class="or-row">Amount Paid <span class="or-line"></span></div>
+      <div class="or-row">Date <span class="or-line" style="width:80px;"></span></div>
+      <div class="or-row">Cashier Signature <span class="or-line" style="width:80px;"></span></div>
+    </div>
+
+    <div class="back-section-title">CONDITION OF PAYMENT</div>
+    <div class="back-sub-title">A. MODE OF PAYMENT</div>
+    <p class="back-body-text">The tuition and other school fees shall be payable in cash in <strong>4 monthly installments</strong> in accordance with the following schedule.</p>
+
+    <div class="payment-grid">
+      <div class="pg-label">1st payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Prelim Exam</div>
+      <div class="pg-label">2nd payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Midterm Exam</div>
+      <div class="pg-label">3rd payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Prefinal Exam</div>
+      <div class="pg-label">4th payment</div><div class="pg-line"></div><div class="pg-mid">due on or before</div><div class="pg-line"></div><div class="pg-exam">Final Exam</div>
+    </div>
+
+    <p class="back-body-text">In case of failure to pay at least two (2) installments of the due and demandable tuition and other school fees as indicated in the above schedule of payment on installments, we (the parents) or I (in case of student) shall recognize, without reservation, the right/authority of the school to drop me (or our child) from the school (or suspend me o our child) from further attending classes and enter the school campus, without need of judicial intervention or permission. That I, (or our child) shall be re admitted only as soon as the tuition and other school fees are paid PROVIDED, however, that I, (our child) will be solely responsible in keeping up with the lessons and assignments missed and shall not have any right to require that special lessons, quizzes and or examinations be given to make-up for the quizzes and/or examinations given during the school day (our child was not allowed to enter and attend classes).</p>
+
+    <div class="back-sub-title">B. Policy on withdrawals and refund</div>
+    <p class="back-body-text">The date of filling the notice or withdrawal shall be considered the date of withdrawal and shall the basis in determining the amount to be charged for the term. Computation for adjustment will be in the accounting Office.</p>
+
+    <ol class="back-ol">
+      <li>Enrollment deposited can be refunded subject to the following conditions.
+        <ol class="back-ol-inner">
+          <li>80% refund before the subjects are encoded and before the enrollment closes.</li>
+          <li>20% refund if the subjects are encoded before the enrollment closes.</li>
+          <li>No refund after the enrollment closes.</li>
+        </ol>
+      </li>
+      <li>10% charge on tuition and other school fees if a student withdraws within the first week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>20% charge on tuition and other school fees if a student withdraws within the second week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>50% charge on tuition and other school fees if a student withdraws within the third week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>75% charge on tuition and other school fees if a student withdraws within the fourth week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>100% charge on tuition and other school fees if a student withdraws within the fifth week of classes regardless of whether or not he/she actually attended classes.</li>
+    </ol>
+
+    <div class="back-sig-block">
+      <div class="back-sig-line"></div>
+      <div class="back-sig-lbl">Applicant's Signature Above Printed Name</div>
+    </div>
+  </div><!-- /back-copy student -->
+
+  <!-- ══ REGISTRAR'S COPY — BACK ══ -->
+  <div class="back-copy">
+    <span class="copy-tag">Registrar's Copy</span>
+
+    <div class="back-or-block">
+      <div class="or-row">O.R. # <span class="or-line"></span></div>
+      <div class="or-row">Amount Paid <span class="or-line"></span></div>
+      <div class="or-row">Date <span class="or-line" style="width:80px;"></span></div>
+      <div class="or-row">Cashier Signature <span class="or-line" style="width:80px;"></span></div>
+    </div>
+
+    <div class="back-section-title">CONDITION OF PAYMENT</div>
+    <div class="back-sub-title">A. MODE OF PAYMENT</div>
+    <p class="back-body-text">The tuition and other school fees shall be payable in cash in <strong>4 monthly installments</strong> in accordance with the following schedule.</p>
+
+    <div class="payment-grid">
+      <div class="pg-label">1st payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Prelim Exam</div>
+      <div class="pg-label">2nd payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Midterm Exam</div>
+      <div class="pg-label">3rd payment</div><div class="pg-line"></div><div class="pg-mid">payable on or before</div><div class="pg-line"></div><div class="pg-exam">Prefinal Exam</div>
+      <div class="pg-label">4th payment</div><div class="pg-line"></div><div class="pg-mid">due on or before</div><div class="pg-line"></div><div class="pg-exam">Final Exam</div>
+    </div>
+
+    <p class="back-body-text">In case of failure to pay at least two (2) installments of the due and demandable tuition and other school fees as indicated in the above schedule of payment on installments, we (the parents) or I (in case of student) shall recognize, without reservation, the right/authority of the school to drop me (or our child) from the school (or suspend me o our child) from further attending classes and enter the school campus, without need of judicial intervention or permission. That I, (or our child) shall be re admitted only as soon as the tuition and other school fees are paid PROVIDED, however, that I, (our child) will be solely responsible in keeping up with the lessons and assignments missed and shall not have any right to require that special lessons, quizzes and or examinations be given to make-up for the quizzes and/or examinations given during the school day (our child was not allowed to enter and attend classes).</p>
+
+    <div class="back-sub-title">B. Policy on withdrawals and refund</div>
+    <p class="back-body-text">The date of filling the notice or withdrawal shall be considered the date of withdrawal and shall the basis in determining the amount to be charged for the term. Computation for adjustment will be in the accounting Office.</p>
+
+    <ol class="back-ol">
+      <li>Enrollment deposited can be refunded subject to the following conditions.
+        <ol class="back-ol-inner">
+          <li>80% refund before the subjects are encoded and before the enrollment closes.</li>
+          <li>20% refund if the subjects are encoded before the enrollment closes.</li>
+          <li>No refund after the enrollment closes.</li>
+        </ol>
+      </li>
+      <li>10% charge on tuition and other school fees if a student withdraws within the first week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>20% charge on tuition and other school fees if a student withdraws within the second week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>50% charge on tuition and other school fees if a student withdraws within the third week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>75% charge on tuition and other school fees if a student withdraws within the fourth week of classes regardless of whether or not he/she actually attended classes.</li>
+      <li>100% charge on tuition and other school fees if a student withdraws within the fifth week of classes regardless of whether or not he/she actually attended classes.</li>
+    </ol>
+
+    <div class="back-sig-block">
+      <div class="back-sig-line"></div>
+      <div class="back-sig-lbl">Applicant's Signature Above Printed Name</div>
+    </div>
+  </div><!-- /back-copy registrar -->
+
+</div><!-- /a4-back --></div></div>
+
+<script>
+function toggleBracket(el) {
+  el.textContent = el.textContent.trim() === '✓' ? '' : '✓';
+}
+function buildRows(tbodyId, totalId) {
+  const tbody = document.getElementById(tbodyId);
+  for (let i = 0; i < 8; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="ci" type="text"></td>
+      <td><input class="ci" type="text" style="width:100%;"></td>
+      <td><input class="ci ci-center" type="number" min="0" step="0.5" oninput="calcTotal('${tbodyId}','${totalId}')"></td>
+      <td><input class="ci ci-center" type="number" min="0" step="0.5" oninput="calcTotal('${tbodyId}','${totalId}')"></td>
+      <td><input class="ci ci-center" type="text"></td>
+      <td><input class="ci ci-center" type="text"></td>
+      <td><input class="ci ci-center" type="text"></td>
+      <td><input class="ci" type="text"></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+function calcTotal(tbodyId, totalId) {
+  let t = 0;
+  document.querySelectorAll(`#${tbodyId} input[type=number]`).forEach(i => { t += parseFloat(i.value) || 0; });
+  document.getElementById(totalId).textContent = t > 0 ? t : '';
+}
+
+buildRows('tbody-s', 'total-s');
+buildRows('tbody-r', 'total-r');
+</script>
+</body>
+
+<script>
+(async function applyBranding() {
+    try {
+        const res  = await fetch('php/api/get_branding_public.php');
+        const data = await res.json();
+        if (!data.success) return;
+        const name = data.school_name || '';
+        if (name) {
+            document.querySelectorAll('.sc-name').forEach(el => el.textContent = name);
+            const hdr = document.getElementById('brandNameHeader');
+            if (hdr) hdr.textContent = name;
+            document.title = 'Enrollment Form — ' + name;
+        }
+    } catch(e) {}
+})();
+</script>
+</html>
